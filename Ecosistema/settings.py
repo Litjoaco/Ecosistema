@@ -27,7 +27,7 @@ BASE_URL = 'http://192.168.1.105:8000'
 
 SECRET_KEY = 'django-insecure-it)h7wo8um6o+%f+p8qduxi0p9)u7x(#zvh5k)_bj*n6wb!=p)'
 DEBUG = False
-ALLOWED_HOSTS = ['72.61.134.252', 'srv1076255.hstgr.cloud', 'meetingup.cl', 'www.meetingup.cl'] 
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost','72.61.134.252', 'srv1076255.hstgr.cloud', 'meetingup.cl', 'www.meetingup.cl'] 
 
 CSRF_TRUSTED_ORIGINS = [
     "https://meetingup.cl/",

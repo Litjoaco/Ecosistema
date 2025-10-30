@@ -246,6 +246,21 @@
                 margin-left: 0.5rem; /* Espacio entre la imagen y el nombre */
             }
         }
+
+        /* --- INICIO: Estilos para la Barra de Navegación Inferior Móvil --- */
+        .mobile-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            background: #ffffff;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            border-top: 1px solid #e9ecef;
+        }
+        .mobile-nav-link {
+            color: #6c757d; /* Color gris para íconos y texto */
+        }
         /* --- FIN: Estilos para Header Interactivo --- */
 
     </style>
@@ -258,17 +273,19 @@
         <a class="navbar-brand d-flex align-items-center" href="{% url 'inicio' %}">
             <img src="{% static 'img/logo.jpg' %}" class="img-fluid rounded me-2" alt="Logo EcosistemaLA" style="height:50px;">
             <div>
-                <span class="fw-bold fs-5 fs-sm-6 d-block">Ecosistema</span>
+                <span class="fw-bold fs-5 fs-sm-6 d-block">EcosistemaLA</span>
                 <small class="d-none d-sm-block">Impulsando el ecosistema emprendedor</small>
             </div>
         </a>
         
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+        <!-- Ocultamos el botón de hamburguesa en todas las vistas -->
+        <button class="navbar-toggler d-none" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         
         <div class="collapse navbar-collapse" id="mainNavbar">
             <ul class="navbar-nav ms-auto align-items-center">
+                <!-- El bloque de acciones para móvil se ha movido fuera del navbar -->
                 {% if usuario %} 
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'directorio_miembros' %}">Explorar</a>
@@ -310,7 +327,7 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li><a class="dropdown-item" href="{% url 'perfil' %}"><i class="bi bi-person-fill me-2"></i>Mi Perfil</a></li>
-                        <li class="d-lg-none"><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#qrModal"><i class="bi bi-qr-code me-2"></i>Mi QR</a></li>
+                        
                         {% if usuario.es_admin or usuario.es_ayudante %}
                         <li class="d-lg-none"><a class="dropdown-item" href="{% url 'panel-admin:panel_admin' %}"><i class="bi bi-shield-lock-fill me-2"></i>Panel Admin</a></li>
                         {% endif %}
@@ -322,13 +339,51 @@
                     </ul>
                 </li>
                 {% else %}
-                    <li class="nav-item"><a href="{% url 'registro' %}" class="btn btn-light">Registro</a></li>
-                    <li class="nav-item ms-2"><a href="{% url 'login' %}" class="btn btn-outline-light">Iniciar Sesión</a></li>
+                    <li class="nav-item d-none d-lg-block"><a href="{% url 'registro' %}" class="btn btn-light"><strong>Regístrate</strong></a></li>
+                    <li class="nav-item ms-2 d-none d-lg-block"><a href="{% url 'login' %}" class="btn btn-outline-light">Iniciar Sesión</a></li>
                 {% endif %}
             </ul>
         </div>
     </div>
 </nav>
+
+<!-- ======================================================= -->
+<!-- = INICIO: Barra de Navegación Inferior para Móviles    = -->
+<!-- ======================================================= -->
+<nav class="d-lg-none mobile-bottom-nav">
+    <div class="d-flex justify-content-around p-2">
+        {% if usuario %}
+            <!-- Vista para usuario logueado -->
+            <a href="{% url 'inicio' %}" class="text-center text-decoration-none mobile-nav-link">
+                <i class="bi bi-house-door-fill fs-4"></i>
+                <small class="d-block">Inicio</small>
+            </a>
+            <a href="{% url 'directorio_miembros' %}" class="text-center text-decoration-none mobile-nav-link">
+                <i class="bi bi-people-fill fs-4"></i>
+                <small class="d-block">Explorar</small>
+            </a>
+            <a href="#" class="text-center text-decoration-none mobile-nav-link" data-bs-toggle="modal" data-bs-target="#qrModal">
+                <i class="bi bi-qr-code-scan fs-4"></i>
+                <small class="d-block">Mi QR</small>
+            </a>
+            <a href="{% url 'mis_reuniones' %}" class="text-center text-decoration-none mobile-nav-link">
+                <i class="bi bi-calendar-check-fill fs-4"></i>
+                <small class="d-block">Actividad</small>
+            </a>
+            <a href="{% url 'perfil' %}" class="text-center text-decoration-none mobile-nav-link">
+                <i class="bi bi-person-circle fs-4"></i>
+                <small class="d-block">Perfil</small>
+            </a>
+        {% else %}
+            <!-- Vista para visitante -->
+            <a href="{% url 'login' %}" class="btn btn-outline-success flex-grow-1 me-2">Iniciar Sesión</a>
+            <a href="{% url 'registro' %}" class="btn btn-success flex-grow-1"><strong>Regístrate</strong></a>
+        {% endif %}
+    </div>
+</nav>
+<!-- ======================================================= -->
+<!-- = FIN: Barra de Navegación Inferior para Móviles      = -->
+<!-- ======================================================= -->
 
 {% block contenido %}
 <main class="container">
@@ -363,10 +418,9 @@
                 <div class="hero-section hero-slide-2">
                     <div class="hero-content">
                         <h1>La Provincia de Biobío, una joya aún sin explorar</h1>
-                        <p class="lead mt-3 fst-italic">
-                            «La Provincia de Biobío, puerta al sur de Chile, conecta las regiones de Ñuble, Biobío y Araucanía... Su ciudad principal, Los Ángeles, es la más grande del país fuera de una capital regional, y cuenta con una creciente comunidad emprendedora, estudiantil y profesional comprometida con construir un ecosistema local atractivo.»
+                        <p class="lead mt-3">
+                            Como puerta al sur de Chile, conecta tres regiones clave. Su capital, Los Ángeles, es un polo de crecimiento con una vibrante comunidad de emprendedores, estudiantes y profesionales.
                         </p>
-                        <p class="text-end mt-3">- Ecosistema LA</p>
                     </div>
                 </div>
             </div>

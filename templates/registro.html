@@ -158,31 +158,39 @@
             </div>
 
             <hr class="my-4">
+
+            <!-- Botón para desplegar la sección de empresa -->
             <div class="text-center mb-3">
-                <h5>Información de tu Empresa o Pyme (Opcional)</h5>
-                <small class="text-muted">Ayuda a otros a conocer tu proyecto.</small>
+                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmpresa" aria-expanded="false" aria-controls="collapseEmpresa">
+                    <i class="bi bi-building-add me-2"></i>Añadir información de mi empresa (Opcional)
+                </button>
             </div>
 
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <label for="{{ form.nombre_empresa.id_for_label }}" class="form-label">{{ form.nombre_empresa.label }}</label>
-                    {{ form.nombre_empresa }}
-                </div>
-                <div class="col-md-6">
-                    <label for="{{ form.rubro_empresa.id_for_label }}" class="form-label">{{ form.rubro_empresa.label }}</label>
-                    {{ form.rubro_empresa }}
-                </div>
-                <div class="col-12">
-                    <label for="{{ form.descripcion_empresa.id_for_label }}" class="form-label">{{ form.descripcion_empresa.label }}</label>
-                    {{ form.descripcion_empresa }}
-                </div>
-                <div class="col-md-6">
-                    <label for="{{ form.web_empresa.id_for_label }}" class="form-label">Sitio Web</label>
-                    {{ form.web_empresa }}
-                </div>
-                <div class="col-md-6">
-                    <label for="{{ form.buscando.id_for_label }}" class="form-label">{{ form.buscando.label }}</label>
-                    {{ form.buscando }}
+            <!-- Contenido desplegable de la empresa -->
+            <div class="collapse" id="collapseEmpresa">
+                <div class="card card-body bg-light border-0 mt-2">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.nombre_empresa.id_for_label }}" class="form-label">{{ form.nombre_empresa.label }}</label>
+                            {{ form.nombre_empresa }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.rubro_empresa.id_for_label }}" class="form-label">{{ form.rubro_empresa.label }}</label>
+                            {{ form.rubro_empresa }}
+                        </div>
+                        <div class="col-12">
+                            <label for="{{ form.descripcion_empresa.id_for_label }}" class="form-label">{{ form.descripcion_empresa.label }}</label>
+                            {{ form.descripcion_empresa }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.web_empresa.id_for_label }}" class="form-label">Sitio Web</label>
+                            {{ form.web_empresa }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.buscando.id_for_label }}" class="form-label">{{ form.buscando.label }}</label>
+                            {{ form.buscando }}
+                        </div>
+                    </div>
                 </div>
             </div>
 

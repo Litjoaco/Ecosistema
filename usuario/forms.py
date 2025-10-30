@@ -110,6 +110,12 @@ class UsuarioForm(forms.ModelForm):
         if rubro == 'otro' and not rubro_otro:
             self.add_error('rubro_otro', 'Debes especificar tu rubro si seleccionas "Otro".')
 
+    def clean_web_empresa(self):
+        web_empresa = self.cleaned_data.get('web_empresa')
+        if web_empresa and not web_empresa.startswith(('http://', 'https://')):
+            web_empresa = 'http://' + web_empresa
+        return web_empresa
+
 class EditarUsuarioForm(forms.ModelForm):
     class Meta:
         model = Usuario
@@ -149,6 +155,12 @@ class EditarUsuarioForm(forms.ModelForm):
              raise forms.ValidationError("Ya existe un usuario con este RUT.")
 
         return message_or_rut
+
+    def clean_web_empresa(self):
+        web_empresa = self.cleaned_data.get('web_empresa')
+        if web_empresa and not web_empresa.startswith(('http://', 'https://')):
+            web_empresa = 'http://' + web_empresa
+        return web_empresa
 
 class AyudanteUsuarioForm(EditarUsuarioForm):
     """Formulario para que los ayudantes editen usuarios, sin campos sensibles."""
@@ -209,6 +221,12 @@ class AdminUsuarioForm(forms.ModelForm):
         rubro_otro = cleaned_data.get("rubro_otro")
         if rubro == 'otro' and not rubro_otro:
             self.add_error('rubro_otro', 'Debes especificar el rubro si seleccionas "Otro".')
+
+    def clean_web_empresa(self):
+        web_empresa = self.cleaned_data.get('web_empresa')
+        if web_empresa and not web_empresa.startswith(('http://', 'https://')):
+            web_empresa = 'http://' + web_empresa
+        return web_empresa
 
     def save(self, commit=True):
         from django.contrib.auth.hashers import make_password
