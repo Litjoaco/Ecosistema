@@ -26,8 +26,13 @@ BASE_URL = 'http://192.168.1.105:8000'
 
 
 SECRET_KEY = 'django-insecure-it)h7wo8um6o+%f+p8qduxi0p9)u7x(#zvh5k)_bj*n6wb!=p)'
-DEBUG = True
-ALLOWED_HOSTS = ['192.168.1.105', 'localhost', '127.0.0.1'] 
+DEBUG = False
+ALLOWED_HOSTS = ['72.61.134.252', 'srv1076255.hstgr.cloud', 'meetingup.cl', 'www.meetingup.cl'] 
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://meetingup.cl/",
+    "https://www.meetingup.cl/",
+]
 
 
 
@@ -131,7 +136,7 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS=[STATIC_DIR,]
 MEDIA_ROOT=MEDIA_DIR
 MEDIA_URL='/media/'
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
