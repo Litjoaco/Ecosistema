@@ -89,12 +89,6 @@ class UsuarioForm(forms.ModelForm):
         password = self.cleaned_data.get('password')
         if len(password) < 8:
             raise forms.ValidationError("La contraseña debe tener al menos 8 caracteres.")
-        if not re.search(r'[A-Z]', password):
-            raise forms.ValidationError("La contraseña debe contener al menos una letra mayúscula.")
-        if not re.search(r'[a-z]', password):
-            raise forms.ValidationError("La contraseña debe contener al menos una letra minúscula.")
-        if not re.search(r'[0-9]', password):
-            raise forms.ValidationError("La contraseña debe contener al menos un número.")
         return password
 
     def clean(self):
@@ -248,12 +242,6 @@ class CambiarPasswordForm(forms.Form):
         password = self.cleaned_data.get('nueva_password')
         if len(password) < 8:
             raise forms.ValidationError("La contraseña debe tener al menos 8 caracteres.")
-        if not re.search(r'[A-Z]', password):
-            raise forms.ValidationError("La contraseña debe contener al menos una letra mayúscula.")
-        if not re.search(r'[a-z]', password):
-            raise forms.ValidationError("La contraseña debe contener al menos una letra minúscula.")
-        if not re.search(r'[0-9]', password):
-            raise forms.ValidationError("La contraseña debe contener al menos un número.")
         return password
 
     def clean(self):
