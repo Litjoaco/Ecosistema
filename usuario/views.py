@@ -51,10 +51,15 @@ def registro(request):
     if request.method == 'POST':
         form = UsuarioForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            messages.success(request, '¡Usuario creado con éxito!')
-            return redirect('login') # Si es válido, redirige a login
-        # Si el formulario NO es válido, se renderiza la misma página
+            # Guardamos el formulario y obtenemos la instancia del nuevo usuario
+            usuario = form.save()
+            # Iniciamos sesión para el nuevo usuario guardando su ID en la sesión
+            request.session['usuario_id'] = usuario.id
+            # Enviamos un mensaje de bienvenida personalizado
+            messages.success(request, f'¡Bienvenido a EcosistemaLA, {usuario.nombre}! Tu registro fue exitoso.')
+            # Redirigimos al inicio en lugar de a la página de login
+            return redirect('inicio')
+        # Si el formulario NO es válido, se renderiza la misma página con los errores
         # pero el 'form' ahora contiene los errores y los datos anteriores.
     else:
         form = UsuarioForm()
