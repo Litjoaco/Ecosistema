@@ -55,6 +55,11 @@
 <main class="container my-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="mb-0">Gestión de Usuarios</h1>
+        <div>
+            <a href="{% url 'panel-admin:exportar_usuarios_excel' %}" id="export-button" class="btn btn-success">
+                <i class="bi bi-file-earmark-excel-fill me-1"></i> Exportar a Excel
+            </a>
+        </div>
     </div>
 
     <!-- Filtros y Búsqueda -->
@@ -142,6 +147,11 @@
                 </table>
             </div>
         </div>
+        <!-- Contenedor para la paginación -->
+        <div class="d-flex justify-content-center mt-4">
+            <nav id="pagination-container" aria-label="Paginación de usuarios">
+            </nav>
+        </div>
     </div>
 </main>
 
@@ -154,6 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('q');
     const rubroFilter = document.getElementById('rubro');
     const userTableBody = document.querySelector('table tbody');
+    const paginationContainer = document.getElementById('pagination-container');
     const searchForm = document.getElementById('search-filter-form');
     const deleteFormSelector = '.delete-form';
     const deleteBtnSelector = '.delete-btn';
@@ -161,6 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchButton = document.getElementById('search-button');
     const currentAdminId = '{{ request.session.usuario_id }}';
 
+    let currentPage = 1;
     let debounceTimer;
     function attachDeleteEventListeners() {
         document.querySelectorAll(deleteBtnSelector).forEach(button => {
@@ -191,11 +203,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function fetchUsers() {
+    function fetchUsers(page = 1) {
         const query = searchInput.value;
         const rubro = rubroFilter.value;
-        const baseUrl = searchForm.dataset.ajaxUrl;
-        const url = `${baseUrl}?q=${encodeURIComponent(query)}&rubro=${encodeURIComponent(rubro)}`;
+        const baseUrl = searchForm.dataset.ajaxUrl; 
+        const url = `${baseUrl}?q=${encodeURIComponent(query)}&rubro=${encodeURIComponent(rubro)}&page=${page}`;
 
         // Mostrar estado de carga en el botón
         searchButton.disabled = true;
@@ -204,7 +216,9 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(url)
             .then(response => response.json())
             .then(data => {
+                currentPage = data.current_page;
                 updateTable(data.usuarios);
+                updatePagination(data);
             })
             .catch(error => console.error('Error fetching users:', error))
             .finally(() => {
@@ -264,16 +278,93 @@ document.addEventListener('DOMContentLoaded', function() {
         attachDeleteEventListeners();
     }
 
+    function updatePagination(data) {
+        paginationContainer.innerHTML = ''; // Limpiar paginación anterior
+
+        if (data.total_pages <= 1) return; // No mostrar si solo hay una página
+
+        let paginationHTML = '<ul class="pagination">';
+
+        // Botón "Anterior"
+        paginationHTML += `
+            <li class="page-item ${data.has_previous ? '' : 'disabled'}">
+                <a class="page-link" href="#" data-page="${data.current_page - 1}">Anterior</a>
+            </li>
+        `;
+
+        // Lógica de paginación mejorada
+        const currentPage = data.current_page;
+        const totalPages = data.total_pages;
+        const pageRange = 2; // Páginas a mostrar a cada lado de la actual
+
+        let showEllipsisStart = false;
+        let showEllipsisEnd = false;
+
+        for (let i = 1; i <= totalPages; i++) {
+            // Siempre mostrar la primera y última página, y las páginas dentro del rango
+            if (i === 1 || i === totalPages || (i >= currentPage - pageRange && i <= currentPage + pageRange)) {
+                paginationHTML += `
+                    <li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" data-page="${i}">${i}</a>
+                    </li>
+                `;
+            } else if (i < currentPage && !showEllipsisStart) {
+                // Mostrar "..." para las páginas antes del rango
+                paginationHTML += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                showEllipsisStart = true;
+            } else if (i > currentPage && !showEllipsisEnd) {
+                // Mostrar "..." para las páginas después del rango
+                paginationHTML += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                showEllipsisEnd = true;
+            }
+        }
+
+        // Botón "Siguiente"
+        paginationHTML += `
+            <li class="page-item ${data.has_next ? '' : 'disabled'}">
+                <a class="page-link" href="#" data-page="${currentPage + 1}">Siguiente</a>
+            </li>
+        `;
+
+        paginationHTML += '</ul>';
+        paginationContainer.innerHTML = paginationHTML;
+
+        // Añadir event listeners a los nuevos botones de paginación
+        paginationContainer.querySelectorAll('.page-link').forEach(link => {
+            // Evitar añadir listener a los puntos suspensivos
+            if (link.parentElement.classList.contains('disabled')) return;
+
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const page = this.dataset.page;
+                if (page) fetchUsers(page);
+            });
+        });
+    }
+
     // Event listeners para la búsqueda en tiempo real
     searchInput.addEventListener('input', () => {
         clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(fetchUsers, 300); // Espera 300ms después de la última tecla
+        debounceTimer = setTimeout(() => fetchUsers(1), 300); // Siempre busca desde la página 1
     });
-    searchButton.addEventListener('click', fetchUsers); // También permite búsqueda con el botón
-    rubroFilter.addEventListener('change', fetchUsers);
+    searchButton.addEventListener('click', () => fetchUsers(1));
+    rubroFilter.addEventListener('change', () => fetchUsers(1));
 
+    // Actualizar el enlace de exportación cuando cambian los filtros
+    function updateExportLink() {
+        const query = searchInput.value;
+        const rubro = rubroFilter.value;
+        const exportButton = document.getElementById('export-button');
+        const baseUrl = exportButton.href.split('?')[0];
+        exportButton.href = `${baseUrl}?q=${encodeURIComponent(query)}&rubro=${encodeURIComponent(rubro)}`;
+    }
+    searchInput.addEventListener('input', updateExportLink);
+    rubroFilter.addEventListener('change', updateExportLink);
     // Asocia los eventos a los botones de eliminar que cargan inicialmente
     attachDeleteEventListeners();
+
+    // Cargar la paginación inicial
+    fetchUsers(1);
 });
 </script>
 </body>

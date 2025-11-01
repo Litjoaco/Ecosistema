@@ -71,6 +71,10 @@
             border-radius: 8px;
             margin-top: 1rem;
         }
+        .reuniones-list-container {
+            max-height: 60vh; /* Límite de altura (60% de la ventana) */
+            overflow-y: auto; /* Muestra una barra de scroll si es necesario */
+        }
     </style>
 </head>
 <body>
@@ -139,7 +143,7 @@
                     <h5><i class="bi bi-list-ul me-2"></i>Reuniones Programadas</h5>
                 </div>
                 <div class="card-body p-4">
-                    <div class="table-responsive">
+                    <div class="table-responsive reuniones-list-container">
                         <table class="table table-hover align-middle">
                             <thead>
                                 <tr>

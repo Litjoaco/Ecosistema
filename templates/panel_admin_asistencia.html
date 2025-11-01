@@ -53,6 +53,10 @@
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             box-shadow: inset 0 0 0 5px rgba(0, 150, 167, 0.5);
         }
+        #lista-asistentes {
+            max-height: 50vh; /* Límite de altura al 50% de la ventana */
+            overflow-y: auto; /* Barra de scroll vertical si se supera la altura */
+        }
         /* --- FIN: Estilos para mejorar la apariencia del escáner --- */
     </style>
 </head>
@@ -131,7 +135,7 @@
                             <select name="usuario_id" id="usuario_id" class="form-select" required>
                                 <option value="" disabled selected>-- Elige un asistente --</option>
                                 {% for usuario in usuarios_no_asistentes %}
-                                    <option value="{{ usuario.id }}">{{ usuario.nombre }} {{ usuario.apellido }}</option>
+                                    <option value="{{ usuario.id }}" data-rut="{{ usuario.rut }}">{{ usuario.nombre }} {{ usuario.apellido }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -150,9 +154,13 @@
                     <h5 class="mb-0"><i class="bi bi-people-fill me-2"></i>Asistentes Registrados (<span id="contador-asistentes">{{ asistentes|length }}</span>)</h5>
                 </div>
                 <div class="card-body">
+                    <div class="mb-3">
+                        <label for="buscar-asistente" class="form-label visually-hidden">Buscar Asistente Registrado</label>
+                        <input type="text" id="buscar-asistente" class="form-control" placeholder="Buscar por nombre o RUT...">
+                    </div>
                     <ul class="list-group list-group-flush" id="lista-asistentes">
                         {% for asistente in asistentes %}
-                        <li class="list-group-item asistente-item d-flex justify-content-between align-items-center" id="asistente-{{ asistente.id }}">
+                        <li class="list-group-item asistente-item d-flex justify-content-between align-items-center" id="asistente-{{ asistente.id }}" data-rut="{{ asistente.rut }}">
                             <div class="d-flex align-items-center">
                                 {% if asistente.foto %}
                                     <img src="{{ asistente.foto.url }}" alt="{{ asistente.nombre }}" class="asistente-img">
@@ -160,7 +168,7 @@
                                     <img src="{% static 'img/person.jpg' %}" alt="Sin foto" class="asistente-img">
                                 {% endif %}
                                 <div>
-                                    <span class="fw-bold">{{ asistente.nombre }} {{ asistente.apellido }}</span>
+                                    <span class="fw-bold asistente-nombre">{{ asistente.nombre }} {{ asistente.apellido }}</span>
                                     <small class="d-block text-muted">{{ asistente.rubro }}</small>
                                 </div>
                             </div>
@@ -197,6 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const listaAsistentes = document.getElementById('lista-asistentes'); // Ya definido
     const contadorAsistentes = document.getElementById('contador-asistentes');
     const noAsistentesMsg = document.getElementById('no-asistentes');
+    const buscarAsistenteInput = document.getElementById('buscar-asistente');
     let lastResult = null;
     let processing = false; // Flag para evitar escaneos múltiples
 
@@ -442,7 +451,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <div class="d-flex align-items-center">
                 <img src="${asistente.foto_url}" alt="${asistente.nombre}" class="asistente-img">
                 <div>
-                    <span class="fw-bold">${asistente.nombre} ${asistente.apellido}</span>
+                    <span class="fw-bold asistente-nombre">${asistente.nombre} ${asistente.apellido}</span>
                     <small class="d-block text-muted">${asistente.rubro}</small>
                 </div>
             </div>
@@ -461,19 +470,63 @@ document.addEventListener("DOMContentLoaded", function () {
         const li = document.createElement('li');
         li.className = 'list-group-item asistente-item d-flex justify-content-between align-items-center';
         li.id = `asistente-${asistente.id}`;
+        li.dataset.rut = asistente.rut; // Añadimos el RUT al nuevo elemento
         li.innerHTML = nuevoAsistenteHTML;
         listaAsistentes.prepend(li);
 
         contadorAsistentes.textContent = parseInt(contadorAsistentes.textContent) + 1;
 
-        $(`#usuario_id option[value='${asistente.id}']`).remove();
+        // Actualizamos el select de registro manual
+        $(`#usuario_id option[value='${asistente.id}']`).data('rut', asistente.rut).remove();
         $('#usuario_id').val(null).trigger('change');
+    }
+
+    // Función para dar formato a los resultados en el desplegable de Select2
+    function formatUser(user) {
+        if (!user.id) {
+            return user.text; // Para el placeholder
+        }
+        // Obtener el RUT del atributo data-rut del <option>
+        const rut = $(user.element).data('rut');
+        // Crear el HTML personalizado para la opción
+        const $user = $(
+            '<div class="d-flex flex-column">' +
+                '<div>' + user.text + '</div>' +
+                '<small class="text-muted">RUT: ' + rut + '</small>' +
+            '</div>'
+        );
+        return $user;
     }
 
     // Inicializar Select2 en el campo de selección de usuario
     $('#usuario_id').select2({
         theme: 'bootstrap-5',
         placeholder: $(this).data('placeholder'),
+        templateResult: formatUser, // Aplicar la función de formato
+        // Habilitar búsqueda por RUT además del nombre
+        matcher: function(params, data) { 
+            // Si no hay término de búsqueda, devuelve todas las opciones
+            if ($.trim(params.term) === '') {
+                return data;
+            }
+
+            // No filtrar el placeholder
+            if (typeof data.text === 'undefined' || !data.element) {
+                return null;
+            }
+
+            const term = params.term.toLowerCase();
+            const userText = data.text.toLowerCase();
+            const userRut = $(data.element).data('rut') ? $(data.element).data('rut').toString().toLowerCase() : '';
+
+            // Si el término de búsqueda se encuentra en el nombre O en el RUT, muestra el resultado
+            if (userText.indexOf(term) > -1 || userRut.indexOf(term) > -1) {
+                return data;
+            }
+
+            // Si no hay coincidencia, no lo muestres
+            return null;
+        }
     });
 
     // Lógica para imprimir etiqueta después de un registro manual
@@ -486,6 +539,23 @@ document.addEventListener("DOMContentLoaded", function () {
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 
+    // Lógica para filtrar la lista de asistentes registrados
+    buscarAsistenteInput.addEventListener('keyup', function() {
+        const filtro = this.value.toLowerCase().trim();
+        const asistentes = listaAsistentes.getElementsByTagName('li');
+        let visibles = 0;
+        for (let i = 0; i < asistentes.length; i++) {
+            const li = asistentes[i];
+            const nombre = li.querySelector('.asistente-nombre').textContent.toLowerCase().trim();
+            const rut = li.dataset.rut ? li.dataset.rut.toLowerCase().trim() : '';
+            if (nombre.includes(filtro) || rut.includes(filtro)) {
+                li.style.display = '';
+                visibles++;
+            } else {
+                li.style.display = 'none';
+            }
+        }
+    });
 });
 </script>
 <!-- Script de Bootstrap para los alerts -->

@@ -9,6 +9,7 @@ urlpatterns = [
     path('usuarios/buscar/', views.buscar_usuarios_ajax, name='buscar_usuarios_ajax'),
     path('usuarios/', views.gestion_usuarios, name='gestion_usuarios'),
     path('usuarios/editar/<int:usuario_id>/', views.editar_usuario_admin, name='editar_usuario_admin'),
+    path('usuarios/exportar-excel/', views.exportar_usuarios_excel, name='exportar_usuarios_excel'),
     path('usuarios/toggle-destacado/<int:usuario_id>/', views.toggle_destacado_usuario, name='toggle_destacado_usuario'),
     path('usuarios/toggle-visibilidad/<int:usuario_id>/', views.toggle_visibilidad_usuario, name='toggle_visibilidad_usuario'),
     path('usuarios/eliminar/<int:usuario_id>/', views.eliminar_usuario, name='eliminar_usuario'),

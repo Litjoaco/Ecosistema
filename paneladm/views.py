@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.http import JsonResponse, HttpResponse, HttpRequest
 from django.db.models import Q, F, Count, Avg, Sum
 from django.utils import timezone
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import openpyxl
 from openpyxl.styles import Font, Alignment
 from openpyxl.utils import get_column_letter
@@ -82,18 +83,15 @@ def privileged_user_required(view_func):
 @admin_required
 def gestion_usuarios(request):
     usuario_actual = get_object_or_404(Usuario, id=request.session.get('usuario_id'))
-    # La búsqueda y el filtrado ahora se manejan exclusivamente por AJAX.
-    # Esta vista solo carga la página inicial con todos los usuarios.
-    usuarios = Usuario.objects.all().order_by('nombre')
     rubros = Usuario.objects.exclude(rubro__exact='').values_list('rubro', flat=True).distinct().order_by('rubro')
     
     query = request.GET.get('q', '')
     rubro_filter = request.GET.get('rubro', '')
 
-    usuarios = Usuario.objects.all().order_by('nombre', 'apellido')
+    usuarios_list = Usuario.objects.all().order_by('nombre', 'apellido')
 
     if query:
-        usuarios = usuarios.filter(
+        usuarios_list = usuarios_list.filter(
             Q(nombre__icontains=query) |
             Q(apellido__icontains=query) |
             Q(email__icontains=query) |
@@ -101,10 +99,20 @@ def gestion_usuarios(request):
         )
     
     if rubro_filter:
-        usuarios = usuarios.filter(rubro=rubro_filter)
+        usuarios_list = usuarios_list.filter(rubro=rubro_filter)
+
+    # Paginación
+    paginator = Paginator(usuarios_list, 15) # 15 usuarios por página
+    page_number = request.GET.get('page')
+    try:
+        usuarios_page = paginator.page(page_number)
+    except PageNotAnInteger:
+        usuarios_page = paginator.page(1)
+    except EmptyPage:
+        usuarios_page = paginator.page(paginator.num_pages)
 
     return render(request, 'panel_admin_usuarios.html', {
-        'usuarios': usuarios, 
+        'usuarios': usuarios_page, # Enviamos el objeto de página
         'rubros': rubros, 
         'query': query, 
         'rubro_filter': rubro_filter, 
@@ -118,13 +126,21 @@ def buscar_usuarios_ajax(request):
     """
     query = request.GET.get('q', '')
     rubro_filter = request.GET.get('rubro', '')
+    page_number = request.GET.get('page', 1)
 
-    usuarios = Usuario.objects.all().order_by('nombre', 'apellido')
+    usuarios_list = Usuario.objects.all().order_by('nombre', 'apellido')
 
     if query:
-        usuarios = usuarios.filter(Q(nombre__icontains=query) | Q(apellido__icontains=query) | Q(email__icontains=query) | Q(rut__icontains=query))
+        usuarios_list = usuarios_list.filter(Q(nombre__icontains=query) | Q(apellido__icontains=query) | Q(email__icontains=query) | Q(rut__icontains=query))
     if rubro_filter:
-        usuarios = usuarios.filter(rubro=rubro_filter)
+        usuarios_list = usuarios_list.filter(rubro=rubro_filter)
+
+    # Paginación para la respuesta AJAX
+    paginator = Paginator(usuarios_list, 15)
+    try:
+        page_obj = paginator.page(page_number)
+    except (EmptyPage, PageNotAnInteger):
+        page_obj = paginator.page(1)
 
     # Preparamos los datos para la respuesta JSON
     data = [{
@@ -138,9 +154,16 @@ def buscar_usuarios_ajax(request):
         'cantidad_asistencias': u.cantidad_asistencias,
         'es_admin': u.es_admin,
         'foto_url': u.foto.url if u.foto else '/static/img/person.jpg'
-    } for u in usuarios]
+    } for u in page_obj.object_list]
 
-    return JsonResponse({'usuarios': data})
+    # Incluimos la información de paginación en la respuesta JSON
+    return JsonResponse({
+        'usuarios': data,
+        'has_previous': page_obj.has_previous(),
+        'has_next': page_obj.has_next(),
+        'current_page': page_obj.number,
+        'total_pages': paginator.num_pages,
+    })
 
 @admin_required
 def editar_usuario_admin(request, usuario_id):
@@ -180,6 +203,55 @@ def eliminar_usuario(request, usuario_id):
         return redirect('directorio_miembros')
     else:
         return redirect('gestion_usuarios')
+
+@solo_admin_required
+def exportar_usuarios_excel(request):
+    """
+    Exporta la lista de usuarios (filtrada o completa) a un archivo Excel.
+    """
+    # 1. Obtener parámetros de filtro de la solicitud
+    query = request.GET.get('q', '')
+    rubro_filter = request.GET.get('rubro', '')
+
+    # 2. Filtrar usuarios según los parámetros
+    usuarios = Usuario.objects.all().order_by('nombre', 'apellido')
+
+    if query:
+        usuarios = usuarios.filter(
+            Q(nombre__icontains=query) |
+            Q(apellido__icontains=query) |
+            Q(email__icontains=query) |
+            Q(rut__icontains=query)
+        )
+    
+    if rubro_filter:
+        usuarios = usuarios.filter(rubro=rubro_filter)
+
+    # 3. Crear el libro y la hoja de Excel
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = "Lista de Usuarios"
+    filename = "lista_usuarios_ecosistemala.xlsx"
+
+    # 4. Añadir encabezados y darles estilo
+    headers = ['Nombre', 'Apellido', 'Email', 'RUT', 'Rubro', 'Teléfono', 'Asistencias']
+    sheet.append(headers)
+    bold_font = Font(bold=True)
+    for cell in sheet[1]:
+        cell.font = bold_font
+
+    # 5. Añadir los datos de los usuarios
+    for usuario in usuarios:
+        sheet.append([
+            usuario.nombre, usuario.apellido, usuario.email, usuario.rut,
+            usuario.get_rubro_real_display, usuario.telefono or '', usuario.cantidad_asistencias
+        ])
+
+    # 6. Preparar la respuesta HTTP
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    workbook.save(response)
+    return response
 
 @solo_admin_required
 def toggle_destacado_usuario(request, usuario_id):
