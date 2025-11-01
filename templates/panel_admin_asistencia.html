@@ -470,7 +470,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const li = document.createElement('li');
         li.className = 'list-group-item asistente-item d-flex justify-content-between align-items-center';
         li.id = `asistente-${asistente.id}`;
-        li.dataset.rut = asistente.rut; // Añadimos el RUT al nuevo elemento
+        li.dataset.rut = asistente.rut || ''; // Aseguramos que el RUT se añada al nuevo elemento
         li.innerHTML = nuevoAsistenteHTML;
         listaAsistentes.prepend(li);
 
@@ -540,7 +540,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Lógica para filtrar la lista de asistentes registrados
-    buscarAsistenteInput.addEventListener('keyup', function() {
+    buscarAsistenteInput.addEventListener('input', function() {
         const filtro = this.value.toLowerCase().trim();
         const asistentes = listaAsistentes.getElementsByTagName('li');
         let visibles = 0;
@@ -549,10 +549,10 @@ document.addEventListener("DOMContentLoaded", function () {
             const nombre = li.querySelector('.asistente-nombre').textContent.toLowerCase().trim();
             const rut = li.dataset.rut ? li.dataset.rut.toLowerCase().trim() : '';
             if (nombre.includes(filtro) || rut.includes(filtro)) {
-                li.style.display = '';
+                li.classList.remove('d-none');
                 visibles++;
             } else {
-                li.style.display = 'none';
+                li.classList.add('d-none');
             }
         }
     });

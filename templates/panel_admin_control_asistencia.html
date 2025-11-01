@@ -20,6 +20,16 @@
         header img {
             height: 50px;
         }
+        .btn-eco {
+            background-color: #8EE000;
+            border-color: #8EE000;
+            color: white;
+        }
+        .btn-eco:hover {
+            background-color: #76c400;
+            border-color: #76c400;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -62,8 +72,8 @@
                                 </span>
                             </td>
                             <td>
-                                <a href="{% url 'panel-admin:registrar_asistencia' reunion.id %}" class="btn btn-info btn-sm" title="Ver/Registrar Asistencia">
-                                    <i class="bi bi-people-fill me-1"></i> Ver Asistentes
+                                <a href="{% url 'panel-admin:registrar_asistencia' reunion.id %}" class="btn btn-eco btn-sm" title="Tomar Asistencia">
+                                    <i class="bi bi-qr-code-scan me-1"></i> Tomar Asistencia
                                 </a>
                             </td>
                         </tr>

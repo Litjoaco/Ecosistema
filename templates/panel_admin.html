@@ -82,6 +82,19 @@
             </a>
         </div>
 
+        <!-- Botón para Gestión de Asistentes (Visible para Admin y Ayudante) -->
+        <div class="col-md-6 col-lg-4">
+            <a href="{% url 'panel-admin:gestion_asistentes' %}" class="card-admin-link">
+                <div class="card text-center h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="bi bi-person-check-fill card-icon mb-3"></i>
+                        <h5 class="card-title">Gestión de Asistentes</h5>
+                        <p class="card-text text-muted">Consulta y gestiona los asistentes de cada reunión.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
         <!-- Botón para Gestión de Soporte (Visible para Admin y Ayudante) -->
         <div class="col-md-6 col-lg-4">
             <a href="{% url 'panel-admin:gestion_soporte' %}" class="card-admin-link">

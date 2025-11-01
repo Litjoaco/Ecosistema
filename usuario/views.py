@@ -83,6 +83,14 @@ def perfil(request):
             
             messages.success(request, '¡Gracias por tu respuesta!')
             return redirect('perfil')
+    
+    elif request.method == 'POST' and 'toggle_privacy' in request.POST:
+        # Lógica para cambiar la privacidad del perfil
+        es_publico = 'perfil_publico' in request.POST
+        usuario.perfil_publico = es_publico
+        usuario.save(update_fields=['perfil_publico']) 
+        messages.success(request, 'Tu configuración de privacidad ha sido actualizada.')
+        return redirect('perfil')
 
     reuniones_asistidas = usuario.reuniones_asistidas.all()
     encuestas_pendientes = []

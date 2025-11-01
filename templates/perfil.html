@@ -88,6 +88,49 @@
                 padding-bottom: 80px; /* Ajusta este valor si la altura de tu barra cambia */
             }
         }
+
+        /* --- INICIO: Estilos para el interruptor de privacidad personalizado --- */
+        .privacy-switch-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .privacy-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .privacy-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 28px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #8EE000; }
+        input:checked + .slider:before { transform: translateX(22px); }
+        /* --- FIN: Estilos para el interruptor de privacidad personalizado --- */
     </style>
 </head>
 <body>
@@ -230,12 +273,24 @@
         
         <div class="mt-4">
             <a href="{% url 'editar_perfil' usuario.id %}" class="btn btn-edit">Editar Perfil</a>
-            <button type="button" class="btn btn-outline-dark ms-2" data-bs-toggle="modal" data-bs-target="#qrModal">
-                <i class="bi bi-qr-code me-1"></i> Ver mi QR
-            </button>
-            <a href="{% url 'imprimir_etiqueta' usuario.id %}" target="_blank" class="btn btn-secondary ms-2">
-                <i class="bi bi-printer-fill me-1"></i> Imprimir Etiqueta
-            </a>
+        </div>
+    </div>
+
+    <!-- Formulario para cambiar visibilidad del perfil -->
+    <div class="card shadow-sm mt-4 mx-auto" style="max-width: 600px;">
+        <div class="card-body d-flex justify-content-between align-items-center p-3">
+            <div>
+                <h6 class="mb-0">Perfil Público</h6>
+                <small class="text-muted">Permite que otros miembros vean tu perfil en el directorio.</small>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="toggle_privacy" value="1">
+                <label class="privacy-switch">
+                    <input type="checkbox" id="togglePrivacySwitch" name="perfil_publico" {% if usuario.perfil_publico %}checked{% endif %} onchange="this.form.submit()">
+                    <span class="slider"></span>
+                </label>
+            </form>
         </div>
     </div>
 

@@ -376,6 +376,90 @@ def quitar_asistencia(request, reunion_id, usuario_id):
     
     return redirect('panel-admin:registrar_asistencia', reunion_id=reunion_id)
 
+@admin_required
+def gestion_asistentes(request):
+    """
+    Página que lista las reuniones para seleccionar y ver sus asistentes.
+    """
+    reuniones = Reunion.objects.annotate(num_asistentes=Count('asistentes')).order_by('-fecha')
+    return render(request, 'panel_admin_gestion_asistentes.html', {
+        'reuniones': reuniones
+    })
+
+@admin_required
+def ver_asistentes_reunion(request, reunion_id):
+    """
+    Muestra una lista paginada de los asistentes de una reunión específica,
+    con funcionalidad de búsqueda.
+    """
+    reunion = get_object_or_404(Reunion, id=reunion_id)
+    asistentes_list = reunion.asistentes.all().order_by('nombre', 'apellido')
+
+    query = request.GET.get('q', '')
+    if query:
+        asistentes_list = asistentes_list.filter(
+            Q(nombre__icontains=query) |
+            Q(apellido__icontains=query) |
+            Q(rut__icontains=query) |
+            Q(email__icontains=query)
+        )
+
+    paginator = Paginator(asistentes_list, 15) # 15 asistentes por página
+    page_number = request.GET.get('page')
+    try:
+        asistentes_page = paginator.page(page_number)
+    except PageNotAnInteger:
+        asistentes_page = paginator.page(1)
+    except EmptyPage:
+        asistentes_page = paginator.page(paginator.num_pages)
+
+    return render(request, 'panel_admin_ver_asistentes.html', {
+        'reunion': reunion,
+        'asistentes': asistentes_page,
+        'query': query,
+    })
+
+@admin_required
+def exportar_asistentes_reunion_excel(request, reunion_id):
+    """
+    Exporta la lista de asistentes de una reunión específica a un archivo Excel,
+    respetando los filtros de búsqueda.
+    """
+    reunion = get_object_or_404(Reunion, id=reunion_id)
+    query = request.GET.get('q', '')
+
+    asistentes = reunion.asistentes.all().order_by('nombre', 'apellido')
+    if query:
+        asistentes = asistentes.filter(
+            Q(nombre__icontains=query) |
+            Q(apellido__icontains=query) |
+            Q(rut__icontains=query) |
+            Q(email__icontains=query)
+        )
+
+    # Crear el libro y la hoja de Excel
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = "Asistentes"
+    filename = f"asistentes_{reunion.detalle.replace(' ', '_').lower()}.xlsx"
+
+    # Añadir encabezados y darles estilo
+    headers = ['Nombre', 'Apellido', 'RUT', 'Email', 'Rubro', 'Teléfono']
+    sheet.append(headers)
+    bold_font = Font(bold=True)
+    for cell in sheet[1]:
+        cell.font = bold_font
+
+    # Añadir los datos de los asistentes
+    for asistente in asistentes:
+        sheet.append([asistente.nombre, asistente.apellido, asistente.rut, asistente.email, asistente.get_rubro_real_display, asistente.telefono or ''])
+
+    # Preparar la respuesta HTTP
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    workbook.save(response)
+    return response
+
 @privileged_user_required # Admin, Ayudante y Tótem pueden usar el QR para marcar asistencia
 def marcar_asistencia_qr(request, reunion_id, usuario_id):
     """
@@ -403,7 +487,7 @@ def marcar_asistencia_qr(request, reunion_id, usuario_id):
             return JsonResponse({
                 'status': 'ok', 
                 'message': f'Asistencia de {usuario.nombre} registrada.',
-                'asistente': { 'id': usuario.id, 'nombre': usuario.nombre, 'apellido': usuario.apellido, 'rubro': usuario.get_rubro_real_display or '', 'foto_url': usuario.foto.url if usuario.foto else '/static/img/person.jpg' },
+                'asistente': { 'id': usuario.id, 'nombre': usuario.nombre, 'apellido': usuario.apellido, 'rut': usuario.rut, 'rubro': usuario.get_rubro_real_display or '', 'foto_url': usuario.foto.url if usuario.foto else '/static/img/person.jpg' },
                 'print_url': print_url
             })
             
