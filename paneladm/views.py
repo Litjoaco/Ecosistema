@@ -13,6 +13,7 @@ import openpyxl
 from openpyxl.styles import Font, Alignment
 from openpyxl.utils import get_column_letter
 import json
+import random
 
 from django.contrib.auth.hashers import check_password
 # Create your views here.
@@ -854,3 +855,51 @@ def exportar_estadisticas_excel(request):
     workbook.save(response)
 
     return response
+
+@solo_admin_required
+def ruleta_sorteo(request):
+    """
+    Muestra la página de la ruleta para realizar sorteos.
+    """
+    reuniones = Reunion.objects.all().order_by('-fecha')
+    contexto = {
+        'reuniones': reuniones,
+        'usuario_actual': get_object_or_404(Usuario, id=request.session.get('usuario_id'))
+    }
+    return render(request, 'panel_admin_ruleta.html', contexto)
+
+@solo_admin_required
+def obtener_participantes_ruleta(request):
+    """
+    Endpoint API que devuelve una lista de nombres de participantes para la ruleta.
+    Puede ser de todos los usuarios o de los asistentes a una reunión específica.
+    """
+    reunion_id = request.GET.get('reunion_id')
+    participantes = []
+
+    if reunion_id == 'todos':
+        # Obtiene todos los usuarios que no son admin/ayudante/totem
+        usuarios = Usuario.objects.filter(es_admin=False, es_ayudante=False, es_totem=False)
+        participantes = [{
+            'id': u.id,
+            'nombre_completo': f"{u.nombre} {u.apellido}",
+            'rubro': u.get_rubro_real_display,
+            'foto_url': u.foto.url if u.foto else '/static/img/person.jpg'
+        } for u in usuarios]
+    elif reunion_id:
+        try:
+            reunion = get_object_or_404(Reunion, id=reunion_id)
+            asistentes = reunion.asistentes.all()
+            participantes = [{
+                'id': a.id,
+                'nombre_completo': f"{a.nombre} {a.apellido}",
+                'rubro': a.get_rubro_real_display,
+                'foto_url': a.foto.url if a.foto else '/static/img/person.jpg'
+            } for a in asistentes]
+        except (ValueError, Reunion.DoesNotExist):
+            return JsonResponse({'error': 'Reunión no válida'}, status=400)
+
+    # Barajar la lista para que el orden no dé pistas
+    random.shuffle(participantes)
+
+    return JsonResponse({'participantes': participantes})

@@ -198,7 +198,15 @@ def panel_admin(request):
     except Usuario.DoesNotExist:
         return redirect('login')
 
-    return render(request, 'panel_admin.html', {'usuario': usuario_actual})
+    # Datos para el dashboard
+    total_usuarios = Usuario.objects.filter(es_admin=False, es_ayudante=False, es_totem=False).count()
+    reuniones_programadas = Reunion.objects.filter(fecha__gte=timezone.now()).count()
+    tickets_abiertos = SoporteTicket.objects.filter(estado='abierto').count()
+
+    contexto = {'usuario': usuario_actual, 'total_usuarios': total_usuarios,
+                'reuniones_programadas': reuniones_programadas, 'tickets_abiertos': tickets_abiertos}
+
+    return render(request, 'panel_admin.html', contexto)
 
 @login_required
 def configuracion(request):

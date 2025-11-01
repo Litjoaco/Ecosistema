@@ -36,4 +36,7 @@ urlpatterns = [
     path('totem/seleccionar-reunion/', views.totem_seleccionar_reunion, name='totem_seleccionar_reunion'),
     path('totem/escaner/<int:reunion_id>/', views.totem_escaner, name='totem_escaner'),
     path('totem/verify-exit/', views.totem_verify_exit, name='totem_verify_exit'),
+    # --- URL para la Ruleta de Sorteos ---
+    path('ruleta/', views.ruleta_sorteo, name='ruleta_sorteo'),
+    path('ruleta/obtener-participantes/', views.obtener_participantes_ruleta, name='obtener_participantes_ruleta'),
 ]

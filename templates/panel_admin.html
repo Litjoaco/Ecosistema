@@ -173,6 +173,20 @@
                 </div>
             </a>
         </div>
+
+        <!-- Card para Ruleta de Sorteos -->
+        <div class="col-md-6 col-lg-4">
+            <a href="{% url 'panel-admin:ruleta_sorteo' %}" class="card-admin-link">
+                <div class="card text-center h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="bi bi-gift-fill card-icon mb-3" style="color: #fd7e14;"></i>
+                        <h5 class="card-title">Ruleta de Sorteos</h5>
+                        <p class="card-text text-muted">Genera sorteos aleatorios entre los asistentes de una reunión o todos los usuarios.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
         {% endif %}
 
     </div>
