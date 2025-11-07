@@ -190,7 +190,7 @@
                 {% if usuario.foto %}
                     <img src="{{ usuario.foto.url }}" alt="Usuario" class="rounded-circle me-2" style="width:35px; height:35px; object-fit:cover;">
                 {% else %}
-                    <img src="{% static 'img/person.jpg' %}" alt="Usuario" class="rounded-circle me-2" style="width:35px; height:35px; object-fit:cover;">
+                    <img src="{% static 'img/predeterminado.png' %}" alt="Usuario" class="rounded-circle me-2" style="width:35px; height:35px; object-fit:cover;">
                 {% endif %}
                 <span>{{ usuario.nombre }}</span>
             </button>
@@ -253,7 +253,7 @@
         {% if usuario.foto %}
             <img src="{{ usuario.foto.url }}" alt="Avatar de {{ usuario.nombre }}" class="profile-img">
         {% else %}
-            <img src="{% static 'img/person.jpg' %}" alt="Avatar por defecto" class="profile-img">
+            <img src="{% static 'img/predeterminado.png' %}" alt="Avatar por defecto" class="profile-img">
         {% endif %}
         <h3>{{ usuario.nombre }} {{ usuario.apellido }}</h3>
         <p class="text-muted mb-1"><i class="bi bi-person-badge-fill me-1"></i>{{ usuario.get_rubro_real_display|default:"Sin rubro especificado" }}</p>

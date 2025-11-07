@@ -143,6 +143,7 @@ def buscar_usuarios_ajax(request):
     except (EmptyPage, PageNotAnInteger):
         page_obj = paginator.page(1)
 
+    from django.templatetags.static import static
     # Preparamos los datos para la respuesta JSON
     data = [{
         'id': u.id,
@@ -154,7 +155,7 @@ def buscar_usuarios_ajax(request):
         'telefono': u.telefono or '',
         'cantidad_asistencias': u.cantidad_asistencias,
         'es_admin': u.es_admin,
-        'foto_url': u.foto.url if u.foto else '/static/img/person.jpg'
+        'foto_url': u.foto.url if u.foto else static('img/predeterminado.png')
     } for u in page_obj.object_list]
 
     # Incluimos la información de paginación en la respuesta JSON
@@ -484,11 +485,12 @@ def marcar_asistencia_qr(request, reunion_id, usuario_id):
             # Refrescar el objeto para obtener el valor actualizado de 'cantidad_asistencias'
             usuario.refresh_from_db()
 
+            from django.templatetags.static import static
             print_url = reverse('imprimir_etiqueta', args=[usuario.id]) if reunion.imprimir_etiqueta_al_asistir else None
             return JsonResponse({
                 'status': 'ok', 
                 'message': f'Asistencia de {usuario.nombre} registrada.',
-                'asistente': { 'id': usuario.id, 'nombre': usuario.nombre, 'apellido': usuario.apellido, 'rut': usuario.rut, 'rubro': usuario.get_rubro_real_display or '', 'foto_url': usuario.foto.url if usuario.foto else '/static/img/person.jpg' },
+                'asistente': { 'id': usuario.id, 'nombre': usuario.nombre, 'apellido': usuario.apellido, 'rut': usuario.rut, 'rubro': usuario.get_rubro_real_display or '', 'foto_url': usuario.foto.url if usuario.foto else static('img/predeterminado.png') },
                 'print_url': print_url
             })
             
@@ -876,6 +878,7 @@ def obtener_participantes_ruleta(request):
     """
     reunion_id = request.GET.get('reunion_id')
     participantes = []
+    from django.templatetags.static import static
 
     if reunion_id == 'todos':
         # Obtiene todos los usuarios que no son admin/ayudante/totem
@@ -884,7 +887,7 @@ def obtener_participantes_ruleta(request):
             'id': u.id,
             'nombre_completo': f"{u.nombre} {u.apellido}",
             'rubro': u.get_rubro_real_display,
-            'foto_url': u.foto.url if u.foto else '/static/img/person.jpg'
+            'foto_url': u.foto.url if u.foto else static('img/predeterminado.png')
         } for u in usuarios]
     elif reunion_id:
         try:
@@ -894,7 +897,7 @@ def obtener_participantes_ruleta(request):
                 'id': a.id,
                 'nombre_completo': f"{a.nombre} {a.apellido}",
                 'rubro': a.get_rubro_real_display,
-                'foto_url': a.foto.url if a.foto else '/static/img/person.jpg'
+                'foto_url': a.foto.url if a.foto else static('img/predeterminado.png')
             } for a in asistentes]
         except (ValueError, Reunion.DoesNotExist):
             return JsonResponse({'error': 'Reunión no válida'}, status=400)

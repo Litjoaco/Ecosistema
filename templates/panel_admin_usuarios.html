@@ -111,7 +111,7 @@
                                 {% if usuario.foto %}
                                     <img src="{{ usuario.foto.url }}" alt="Foto de {{ usuario.nombre }}" class="user-photo">
                                 {% else %}
-                                    <img src="{% static 'img/person.jpg' %}" alt="Sin foto" class="user-photo">
+                                    <img src="{% static 'img/predeterminado.png' %}" alt="Sin foto" class="user-photo">
                                 {% endif %}
                             </td>
                             <td>{{ usuario.nombre }} {{ usuario.apellido }}</td>

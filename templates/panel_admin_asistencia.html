@@ -165,7 +165,7 @@
                                 {% if asistente.foto %}
                                     <img src="{{ asistente.foto.url }}" alt="{{ asistente.nombre }}" class="asistente-img">
                                 {% else %}
-                                    <img src="{% static 'img/person.jpg' %}" alt="Sin foto" class="asistente-img">
+                                    <img src="{% static 'img/predeterminado.png' %}" alt="Sin foto" class="asistente-img">
                                 {% endif %}
                                 <div>
                                     <span class="fw-bold asistente-nombre">{{ asistente.nombre }} {{ asistente.apellido }}</span>

@@ -290,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch(`{% url 'panel-admin:obtener_participantes_ruleta' %}?reunion_id=${reunionId}`);
             const data = await response.json();
 
-            if (data.error) {
+            if (data.error || !data.participantes) {
                 throw new Error(data.error);
             }
 
