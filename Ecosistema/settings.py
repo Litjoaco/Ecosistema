@@ -87,7 +87,7 @@ WSGI_APPLICATION = 'Ecosistema.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ecola',
+        'NAME': 'dispack',
         'USER':'root',
         'PASSWORD':'',
         'OPTIONS': {
