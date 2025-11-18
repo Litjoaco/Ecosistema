@@ -56,7 +56,8 @@ def registro(request):
             # Iniciamos sesión para el nuevo usuario guardando su ID en la sesión
             request.session['usuario_id'] = usuario.id
             # Enviamos un mensaje de bienvenida personalizado
-            messages.success(request, f'¡Bienvenido a EcosistemaLA, {usuario.nombre}! Tu registro fue exitoso.')
+            password_inicial = usuario.rut[:-1]
+            messages.success(request, f'¡Bienvenido, {usuario.nombre}! Tu registro fue exitoso. Tu contraseña inicial es tu RUT sin dígito verificador: {password_inicial}')
             # Redirigimos al inicio en lugar de a la página de login
             return redirect('inicio')
         # Si el formulario NO es válido, se renderiza la misma página con los errores

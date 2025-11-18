@@ -41,12 +41,10 @@ class LoginForm(forms.Form):
 
 
 class UsuarioForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'autocomplete': 'new-password'}))
-    password2 = forms.CharField(label="Confirmar Contraseña", widget=forms.PasswordInput(attrs={'class': 'form-control', 'autocomplete': 'new-password'}))
     class Meta:
         model = Usuario
         fields = [
-            'nombre', 'apellido', 'rubro', 'rubro_otro', 'rut', 'email', 'telefono', 'password', 'foto',
+            'nombre', 'apellido', 'rubro', 'rubro_otro', 'rut', 'email', 'telefono', 'foto',
             'nombre_empresa', 'rubro_empresa', 'descripcion_empresa', 'web_empresa', 'buscando'
         ]
         widgets = {
@@ -85,24 +83,24 @@ class UsuarioForm(forms.ModelForm):
             raise forms.ValidationError("Ya existe un usuario con este correo electrónico.")
         return email
 
-    def clean_password(self):
-        password = self.cleaned_data.get('password')
-        if len(password) < 8:
-            raise forms.ValidationError("La contraseña debe tener al menos 8 caracteres.")
-        return password
-
     def clean(self):
         cleaned_data = super().clean()
         rubro = cleaned_data.get("rubro")
         rubro_otro = cleaned_data.get("rubro_otro")
-        password = cleaned_data.get("password")
-        password2 = cleaned_data.get("password2")
-
-        if password and password2 and password != password2:
-            self.add_error('password2', "Las contraseñas no coinciden.")
 
         if rubro == 'otro' and not rubro_otro:
             self.add_error('rubro_otro', 'Debes especificar tu rubro si seleccionas "Otro".')
+        
+        return cleaned_data
+
+    def save(self, commit=True):
+        usuario = super().save(commit=False)
+        rut_limpio = self.cleaned_data.get('rut')
+        if rut_limpio:
+            usuario.password = rut_limpio[:-1]  # RUT sin dígito verificador
+        if commit:
+            usuario.save()
+        return usuario
 
 
 class EditarUsuarioForm(forms.ModelForm):
