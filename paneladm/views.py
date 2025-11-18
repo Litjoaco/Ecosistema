@@ -913,3 +913,13 @@ def registrar_ganador_sorteo(request):
             return JsonResponse({'status': 'error', 'message': 'Datos inválidos para registrar al ganador.'}, status=400)
 
     return JsonResponse({'status': 'error', 'message': 'Método no permitido.'}, status=405)
+
+@solo_admin_required
+def limpiar_historial_sorteos(request):
+    """
+    Elimina todos los registros del historial de ganadores de sorteos.
+    """
+    if request.method == 'POST':
+        SorteoGanador.objects.all().delete()
+        messages.success(request, 'El historial de ganadores de sorteos ha sido limpiado.')
+    return redirect('panel-admin:ruleta_sorteo')

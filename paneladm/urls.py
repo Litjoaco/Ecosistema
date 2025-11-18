@@ -40,4 +40,5 @@ urlpatterns = [
     path('ruleta/', views.ruleta_sorteo, name='ruleta_sorteo'),
     path('ruleta/obtener-participantes/', views.obtener_participantes_ruleta, name='obtener_participantes_ruleta'),
     path('ruleta/registrar-ganador/', views.registrar_ganador_sorteo, name='registrar_ganador_sorteo'),
+    path('ruleta/limpiar-historial/', views.limpiar_historial_sorteos, name='limpiar_historial_sorteos'),
 ]

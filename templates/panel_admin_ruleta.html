@@ -157,8 +157,16 @@
     <div class="row justify-content-center mt-5">
         <div class="col-lg-8">
             <div class="card shadow-lg">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="bi bi-trophy-fill me-2"></i>Historial de Ganadores Recientes</h5>
+                    {% if ganadores_recientes %}
+                    <form action="{% url 'panel-admin:limpiar_historial_sorteos' %}" method="POST" id="clear-history-form" class="d-inline">
+                        {% csrf_token %}
+                        <button type="button" id="clear-history-btn" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-trash3-fill me-1"></i> Limpiar Historial
+                        </button>
+                    </form>
+                    {% endif %}
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -225,6 +233,26 @@ document.addEventListener('DOMContentLoaded', function() {
     const spinBtn = document.getElementById('spin-btn');
     const reunionFilter = document.getElementById('reunion-filter');
     const winnerModal = new bootstrap.Modal(document.getElementById('winnerModal'));
+    const clearHistoryBtn = document.getElementById('clear-history-btn');
+
+    if (clearHistoryBtn) {
+        clearHistoryBtn.addEventListener('click', function() {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡Se borrará todo el historial de ganadores y no podrás revertirlo!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, ¡limpiar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('clear-history-form').submit();
+                }
+            });
+        });
+    }
 
     let participants = [];
     let rotation = 0;
