@@ -46,33 +46,24 @@
 
         .tag-info {
             flex-grow: 1;
-            text-align: left;
+            text-align: center; /* Centrar el texto */
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: center; /* Centrar verticalmente */
         }
 
         .tag-info h4 {
-            font-size: 20pt; /* Aumentado para mayor legibilidad */
+            font-size: 22pt; /* Un poco más grande */
             font-weight: 700;
-            margin: 0 0 4px 0;
+            margin: 0 0 8px 0; /* Más espacio debajo del nombre */
             line-height: 1.2;
         }
 
         .tag-info p {
-            margin: 0 0 6px 0; /* Menos margen inferior */
-            font-size: 9.5pt;
+            margin: 0;
+            font-size: 11pt; /* Un poco más grande */
             color: #555;
-        }
-
-        .tag-info .asistencias-container {
-            margin-top: auto; /* Empuja las asistencias hacia abajo */
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 12pt;
-            color: #333;
         }
 
         @media print {
@@ -98,10 +89,6 @@
         <div class="tag-info">
             <h4>{{ usuario.nombre }}<br>{{ usuario.apellido }}</h4>
             <p>{{ usuario.get_rubro_real_display }}</p>
-            <div class="asistencias-container">
-                <i class="bi bi-calendar-check-fill" style="font-size: 1.5rem; color: #007bff;"></i>
-                <div><strong>{{ usuario.cantidad_asistencias }}</strong> Asistencias</div>
-            </div>
         </div>
     </div>
 
