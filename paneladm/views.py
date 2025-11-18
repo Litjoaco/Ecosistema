@@ -642,19 +642,7 @@ def estadisticas_admin(request):
     reunion_seleccionada_id_str = request.GET.get('reunion_id', None)
     usuario_actual = get_object_or_404(Usuario, id=request.session.get('usuario_id'))
 
-    # --- 1. Función para aplanar los RUBRO_CHOICES anidados ---
-    def flatten_choices(choices):
-        flat_dict = {}
-        for group in choices:
-            if isinstance(group[1], (list, tuple)):
-                for key, value in group[1]:
-                    flat_dict[key] = value
-            else:
-                # En caso de que haya una tupla no anidada
-                flat_dict[group[0]] = group[1]
-        return flat_dict
-
-    rubros_dict = flatten_choices(RUBRO_CHOICES)
+    rubros_dict = dict(RUBRO_CHOICES)
 
     # --- 2. Inicialización completa del contexto con valores por defecto ---
     contexto = {
@@ -788,16 +776,7 @@ def exportar_estadisticas_excel(request):
         distribucion_puntuacion = RespuestaEncuesta.objects.values('puntuacion').annotate(cantidad=Count('id')).order_by('puntuacion')
         usuarios_por_rubro_qs = Usuario.objects.filter(rubro__isnull=False).exclude(rubro__exact='').values('rubro').annotate(cantidad=Count('id')).order_by('-cantidad')
         
-        def flatten_choices(choices):
-            flat_dict = {}
-            for group in choices:
-                if isinstance(group[1], (list, tuple)):
-                    for key, value in group[1]:
-                        flat_dict[key] = value
-                else:
-                    flat_dict[group[0]] = group[1]
-            return flat_dict
-        rubros_dict = flatten_choices(RUBRO_CHOICES)
+        rubros_dict = dict(RUBRO_CHOICES)
 
         # Hoja de Resumen General
         sheet_resumen = workbook.active
