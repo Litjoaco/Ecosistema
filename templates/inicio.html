@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcosistemaLA</title>
+    <title>Dispack - Calidad y servicio</title>
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
@@ -271,10 +271,10 @@
     <div class="container">
         <!-- Logo y nombre -->
         <a class="navbar-brand d-flex align-items-center" href="{% url 'inicio' %}">
-            <img src="{% static 'img/logo.jpg' %}" class="img-fluid rounded me-2" alt="Logo EcosistemaLA" style="height:50px;">
+            <img src="{% static 'img/logodispack.png' %}" class="img-fluid rounded me-2" alt="Logo EcosistemaLA" style="height:50px;">
             <div>
-                <span class="fw-bold fs-5 fs-sm-6 d-block">EcosistemaLA</span>
-                <small class="d-none d-sm-block">Impulsando el ecosistema emprendedor</small>
+                <span class="fw-bold fs-5 fs-sm-6 d-block">Dispack</span>
+                <small class="d-none d-sm-block">Calidad y servicio a tu alcance</small>
             </div>
         </a>
         
@@ -405,11 +405,11 @@
             <div class="carousel-item active">
                 <div class="hero-section hero-slide-1">
                     <div class="hero-content">
-                        <h1>¿Qué es EcosistemaLA? </h1>
+                        <h1>Comunidad Dispack</h1>
                         <p class="lead mt-3">
-                            Una comunidad de emprendedores, estudiantes y profesionales comprometidos con el desarrollo de un ecosistema local atractivo en la Provincia de Biobío, impulsando la innovación y la colaboración.
+                            Un espacio impulsado por Dispack para emprendedores, estudiantes y profesionales, fomentando la innovación y colaboración en nuestra comunidad.
                         </p>
-                        <a href="https://ecosistemala.cl/" target="_blank" class="btn btn-outline-light btn-lg mt-3">Visita nuestra página oficial</a>
+                        <a href="#reuniones" class="btn btn-outline-light btn-lg mt-3">Ver Próximas Reuniones</a>
                     </div>
                 </div>
             </div>
@@ -417,9 +417,9 @@
             <div class="carousel-item">
                 <div class="hero-section hero-slide-2">
                     <div class="hero-content">
-                        <h1>La Provincia de Biobío, una joya aún sin explorar</h1>
+                        <h1>Conectando la Región</h1>
                         <p class="lead mt-3">
-                            Como puerta al sur de Chile, conecta tres regiones clave. Su capital, Los Ángeles, es un polo de crecimiento con una vibrante comunidad de emprendedores, estudiantes y profesionales.
+                            Nuestra capital, Los Ángeles, es un polo de crecimiento con una vibrante comunidad de emprendedores, estudiantes y profesionales listos para conectar.
                         </p>
                     </div>
                 </div>
@@ -436,7 +436,7 @@
     <!-- Sección de Próximas Reuniones (Movida aquí para darle prioridad) -->
     <div class="row g-4 mt-4">
         <div class="col-12">
-            <h2 class="text-center mb-4">Próximas Reuniones</h2>
+            <h2 class="text-center mb-4" id="reuniones">Próximas Reuniones</h2>
             <div class="row g-4">
                 {% for reunion in reuniones %}
                 <div class="col-lg-4 col-md-6">
@@ -548,7 +548,7 @@
     <!-- Nueva Sección: Cómo Funciona y Estadísticas -->
     <div class="features-section">
         <div class="row gy-4 align-items-center">
-            <div class="col-12 text-center mb-4">
+            <div class="col-12 text-center mb-4" id="como-funciona">
                 <h2>Únete a la Comunidad</h2>
                 <p class="lead text-muted">Participar es muy fácil. Sigue estos simples pasos.</p>
             </div>
@@ -590,7 +590,7 @@
 
     <div class="row g-4 mb-5">
         <!-- Sección de Testimonios Reorganizada -->
-        <div class="col-12">
+        <div class="col-12" id="testimonios">
             <h2 class="text-center mb-4">¿Qué Dice Nuestra Comunidad?</h2>
             {% if testimonios %}
             <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -716,16 +716,16 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="container">
         <div class="row align-items-center mb-3">
             <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                <h5>EcosistemaLA</h5>
-                <p class="mb-0">Impulsando el ecosistema emprendedor del Biobío</p>
+                <h5>Dispack</h5>
+                <p class="mb-0">Calidad y servicio a tu alcance.</p>
             </div>
             <div class="col-md-6 text-center text-md-end">
                 <a href="https://www.instagram.com/ecosistema.la/" target="_blank" class="ms-2">Instagram</a>
-                {% if usuario %}| <a href="{% url 'crear_ticket_soporte' %}" class="ms-2">Soporte</a>{% endif %}
+                {% if usuario %}| <a href="{% url 'crear_ticket_soporte' %}" class="ms-2">Contacto</a>{% endif %}
             </div>
         </div>
         <div class="text-center mt-4 border-top border-white border-opacity-25 pt-3">
-            <small>&copy; 2025 EcosistemaLA. Todos los derechos reservados.</small>
+            <small>&copy; 2025 Dispack. Todos los derechos reservados.</small>
         </div>
     </div>
 </footer>

@@ -7,11 +7,11 @@
         <div class="col-lg-8">
             <div class="card shadow-sm">
                 <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0"><i class="bi bi-question-circle-fill me-2"></i>Enviar Ticket de Soporte</h4>
-                    <a href="{% url 'mis_tickets' %}" class="btn btn-outline-light btn-sm">Mis Tickets</a>
+                    <h4 class="mb-0"><i class="bi bi-question-circle-fill me-2"></i>Formulario de Contacto</h4>
+                    <a href="{% url 'mis_tickets' %}" class="btn btn-outline-light btn-sm">Mis Consultas</a>
                 </div>
                 <div class="card-body p-4">
-                    <p class="text-muted">¿Tienes alguna duda o problema? Rellena el siguiente formulario y nuestro equipo se pondrá en contacto contigo.</p>
+                    <p class="text-muted">¿Tienes alguna duda o problema? Rellena el siguiente formulario y nuestro equipo se pondrá en contacto contigo a la brevedad.</p>
                     <form method="POST">
                         {% csrf_token %}
                         <div class="mb-3">
@@ -22,7 +22,7 @@
                             <label for="{{ form.mensaje.id_for_label }}" class="form-label">{{ form.mensaje.label }}</label>
                             {{ form.mensaje }}
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Enviar Ticket</button>
+                        <button type="submit" class="btn btn-primary w-100">Enviar Mensaje</button>
                     </form>
                 </div>
             </div>

@@ -11,7 +11,7 @@
     <!-- Formulario de Búsqueda y Filtro -->
     <div class="card shadow-sm mb-4">
         <div class="card-body">
-            <form method="GET" class="row g-3 align-items-center">
+            <form method="GET" class="row g-3 align-items-end">
                 <div class="col-md-6">
                     <input type="text" name="q" class="form-control" placeholder="Buscar por nombre..." value="{{ request.GET.q }}">
                 </div>
@@ -23,8 +23,9 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-md-2 d-grid">
-                    <button type="submit" class="btn btn-primary">Buscar</button>
+                <div class="col-md-2 d-flex">
+                    <button type="submit" class="btn btn-primary w-100 me-2">Buscar</button>
+                    <a href="{% url 'directorio_miembros' %}" class="btn btn-secondary" title="Limpiar filtros"><i class="bi bi-x-lg"></i></a>
                 </div>
             </form>
         </div>

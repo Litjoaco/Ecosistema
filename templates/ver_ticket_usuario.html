@@ -6,7 +6,7 @@
         <div class="col-lg-9">
             <div class="card shadow-sm">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Ticket #{{ ticket.id }}: {{ ticket.asunto }}</h5>
+                    <h5 class="mb-0">Consulta #{{ ticket.id }}: {{ ticket.asunto }}</h5>
                     <span class="badge bg-{% if ticket.estado == 'abierto' %}primary{% elif ticket.estado == 'en_progreso' %}warning text-dark{% else %}secondary{% endif %}">{{ ticket.get_estado_display }}</span>
                 </div>
                 <div class="card-body">
@@ -27,7 +27,7 @@
                                 </div>
                             </div>
                         {% empty %}
-                            <p class="text-muted text-center">No hay respuestas en este ticket todavía.</p>
+                            <p class="text-muted text-center">No hay respuestas en esta consulta todavía.</p>
                         {% endfor %}
                     </div>
 
@@ -42,11 +42,11 @@
                         <button type="submit" class="btn btn-success mt-3 w-100">Enviar Respuesta</button>
                     </form>
                     {% else %}
-                    <div class="alert alert-secondary text-center">Este ticket ha sido cerrado y ya no se pueden añadir más respuestas.</div>
+                    <div class="alert alert-secondary text-center">Esta consulta ha sido cerrada y ya no se pueden añadir más respuestas.</div>
                     {% endif %}
                 </div>
                 <div class="card-footer text-end">
-                    <a href="{% url 'mis_tickets' %}" class="btn btn-secondary">Volver a Mis Tickets</a>
+                    <a href="{% url 'mis_tickets' %}" class="btn btn-secondary">Volver a Mis Consultas</a>
                 </div>
             </div>
         </div>

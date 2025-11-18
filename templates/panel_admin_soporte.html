@@ -1,6 +1,6 @@
 {% extends 'panel_admin_base.html' %}
 
-{% block title %}Gestión de Soporte - Panel de Administrador{% endblock %}
+{% block title %}Gestión de Contacto - Panel de Administrador{% endblock %}
 
 {% block panel_nav_buttons %}
     <a href="{% url 'panel-admin:panel_admin' %}" class="btn btn-outline-light">Volver al Panel</a>
@@ -9,7 +9,7 @@
 
 {% block content %}
 <div class="container">
-    <h2 class="mb-4">Gestión de Tickets de Soporte</h2>
+    <h2 class="mb-4">Gestión de Tickets de Contacto</h2>
     
     <div class="card shadow-sm">
         <div class="card-body">
@@ -38,7 +38,7 @@
                             </td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="5" class="text-center">No hay tickets de soporte.</td></tr>
+                        <tr><td colspan="5" class="text-center">No hay tickets de contacto.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>

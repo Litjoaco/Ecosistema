@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - EcosistemaLA</title>
+    <title>Panel de Administración - Dispack</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -41,9 +41,9 @@
 
 <header class="header-admin p-3 shadow-sm d-flex justify-content-between align-items-center">
     <div class="d-flex align-items-center">
-        <img src="{% static 'img/logo.jpg' %}" class="img-fluid rounded me-2" alt="Logo" style="height:50px;">
+        <img src="{% static 'img/logodispack.png' %}" class="img-fluid rounded me-2" alt="Logo" style="height:50px;">
         <div>
-            <span class="fw-bold fs-5">Panel de Administración</span>
+            <span class="fw-bold fs-5">Panel de Administración - Dispack</span>
             <small class="d-block">Hola, {{ usuario.nombre }}</small>
         </div>
     </div>
@@ -115,7 +115,7 @@
                     <div class="card-body d-flex flex-column justify-content-center align-items-center">
                         <i class="bi bi-bar-chart-line-fill card-icon mb-3"></i>
                         <h5 class="card-title">Estadísticas</h5>
-                        <p class="card-text text-muted">Visualiza datos y métricas del ecosistema y las reuniones.</p>
+                        <p class="card-text text-muted">Visualiza datos y métricas de la comunidad y las reuniones.</p>
                     </div>
                 </div>
             </a>
@@ -128,7 +128,7 @@
                     <div class="card-body d-flex flex-column justify-content-center align-items-center">
                         <i class="bi bi-person-plus-fill card-icon mb-3"></i>
                         <h5 class="card-title">Crear Nuevo Usuario</h5>
-                        <p class="card-text text-muted">Añade un nuevo miembro al ecosistema.</p>
+                        <p class="card-text text-muted">Añade un nuevo miembro a la comunidad.</p>
                     </div>
                 </div>
             </a>
@@ -144,7 +144,7 @@
                     <div class="card-body d-flex flex-column justify-content-center align-items-center">
                         <i class="bi bi-calendar-plus-fill card-icon mb-3"></i>
                         <h5 class="card-title">Gestión de Reuniones</h5>
-                        <p class="card-text text-muted">Crea, edita y elimina las reuniones del ecosistema.</p>
+                        <p class="card-text text-muted">Crea, edita y elimina las reuniones de la comunidad.</p>
                     </div>
                 </div>
             </a>

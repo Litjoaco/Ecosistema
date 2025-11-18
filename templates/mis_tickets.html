@@ -5,8 +5,8 @@
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2><i class="bi bi-ticket-detailed-fill me-2"></i>Mis Tickets de Soporte</h2>
-                <a href="{% url 'crear_ticket_soporte' %}" class="btn btn-primary">Crear Nuevo Ticket</a>
+                <h2><i class="bi bi-ticket-detailed-fill me-2"></i>Mis Consultas</h2>
+                <a href="{% url 'crear_ticket_soporte' %}" class="btn btn-primary">Crear Nueva Consulta</a>
             </div>
 
             <div class="card shadow-sm">
@@ -30,7 +30,7 @@
                                     <td><a href="{% url 'ver_ticket_usuario' ticket.id %}" class="btn btn-sm btn-outline-primary">Ver Conversación</a></td>
                                 </tr>
                                 {% empty %}
-                                <tr><td colspan="4" class="text-center">No has creado ningún ticket de soporte.</td></tr>
+                                <tr><td colspan="4" class="text-center">No has enviado ninguna consulta.</td></tr>
                                 {% endfor %}
                             </tbody>
                         </table>

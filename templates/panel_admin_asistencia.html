@@ -64,7 +64,9 @@
 
 <header class="p-3 shadow-sm d-flex justify-content-between align-items-center">
     <div>
-        <h4 class="mb-0">Registrar Asistencia</h4>
+        <a href="{% url 'inicio' %}" class="d-flex align-items-center text-white text-decoration-none">
+            <img src="{% static 'img/logodispack.png' %}" class="img-fluid rounded me-2" alt="Logo EcosistemaLA" style="height:50px;">
+        </a>
         <small class="text-white-50">{{ reunion.detalle }}</small>
     </div>
     <a href="{% url 'panel-admin:gestion_reuniones' %}" class="btn btn-outline-light">Volver a Reuniones</a>
