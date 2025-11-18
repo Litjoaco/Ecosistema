@@ -39,4 +39,5 @@ urlpatterns = [
     # --- URL para la Ruleta de Sorteos ---
     path('ruleta/', views.ruleta_sorteo, name='ruleta_sorteo'),
     path('ruleta/obtener-participantes/', views.obtener_participantes_ruleta, name='obtener_participantes_ruleta'),
+    path('ruleta/registrar-ganador/', views.registrar_ganador_sorteo, name='registrar_ganador_sorteo'),
 ]
