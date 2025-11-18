@@ -113,7 +113,7 @@
             <div class="text-center mb-4">
                 <div class="profile-pic-wrapper" onclick="document.getElementById('{{ form.foto.id_for_label }}').click();">
                     <img id="profilePicPreview" class="profile-pic" 
-                         src="{% if usuario.foto %}{{ usuario.foto.url }}{% else %}{% static 'img/person.jpg' %}{% endif %}" 
+                         src="{% if usuario.foto %}{{ usuario.foto.url }}{% else %}{% static 'img/predeterminado.png' %}{% endif %}" 
                          alt="Foto de perfil">
                     <div class="upload-button">
                         <i class="bi bi-camera-fill"></i> Cambiar

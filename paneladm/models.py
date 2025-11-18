@@ -78,3 +78,17 @@ class TicketRespuesta(models.Model):
 
     def __str__(self):
         return f"Respuesta de {self.usuario.nombre} en ticket #{self.ticket.id}"
+
+class SorteoGanador(models.Model):
+    ganador = models.ForeignKey('usuario.Usuario', on_delete=models.CASCADE, related_name='sorteos_ganados')
+    reunion = models.ForeignKey(Reunion, on_delete=models.SET_NULL, null=True, blank=True, help_text="Reunión de la cual se extrajo el ganador. Nulo si fue de 'Todos los usuarios'.")
+    fuente_participantes = models.CharField(max_length=100, help_text="Describe el grupo de participantes (ej: 'Todos los usuarios', 'Reunión X').")
+    fecha_sorteo = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Ganador de Sorteo"
+        verbose_name_plural = "Ganadores de Sorteos"
+        ordering = ['-fecha_sorteo']
+
+    def __str__(self):
+        return f"Ganador: {self.ganador.nombre} {self.ganador.apellido} ({self.fecha_sorteo.strftime('%d-%m-%Y')})"

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from usuario.models import Usuario, RUBRO_CHOICES # Asegurarse de que Usuario está importado
 from usuario.forms import AdminUsuarioForm, AyudanteUsuarioForm
-from .models import Reunion, Encuesta, RespuestaEncuesta, SoporteTicket, TicketRespuesta
+from .models import Reunion, Encuesta, RespuestaEncuesta, SoporteTicket, TicketRespuesta, SorteoGanador
 from .forms import ReunionForm, EncuestaForm, SoporteTicketAdminForm, TicketRespuestaForm
 from django.urls import reverse
 from django.contrib import messages
@@ -842,9 +842,11 @@ def ruleta_sorteo(request):
     """
     Muestra la página de la ruleta para realizar sorteos.
     """
+    ganadores_recientes = SorteoGanador.objects.select_related('ganador', 'reunion').all()[:10]
     reuniones = Reunion.objects.all().order_by('-fecha')
     contexto = {
         'reuniones': reuniones,
+        'ganadores_recientes': ganadores_recientes,
         'usuario_actual': get_object_or_404(Usuario, id=request.session.get('usuario_id'))
     }
     return render(request, 'panel_admin_ruleta.html', contexto)
@@ -885,3 +887,29 @@ def obtener_participantes_ruleta(request):
     random.shuffle(participantes)
 
     return JsonResponse({'participantes': participantes})
+
+@solo_admin_required
+def registrar_ganador_sorteo(request):
+    """
+    Endpoint API para registrar al ganador de un sorteo en el historial.
+    """
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            ganador_id = data.get('ganador_id')
+            fuente_id = data.get('fuente_id') # Puede ser 'todos' o un ID de reunión
+
+            ganador = get_object_or_404(Usuario, id=ganador_id)
+            
+            reunion_obj = None
+            fuente_texto = "Todos los usuarios"
+            if fuente_id != 'todos':
+                reunion_obj = get_object_or_404(Reunion, id=fuente_id)
+                fuente_texto = reunion_obj.detalle
+
+            SorteoGanador.objects.create(ganador=ganador, reunion=reunion_obj, fuente_participantes=fuente_texto)
+            return JsonResponse({'status': 'ok', 'message': 'Ganador registrado en el historial.'})
+        except (json.JSONDecodeError, KeyError, Usuario.DoesNotExist, Reunion.DoesNotExist):
+            return JsonResponse({'status': 'error', 'message': 'Datos inválidos para registrar al ganador.'}, status=400)
+
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido.'}, status=405)

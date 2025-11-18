@@ -41,7 +41,7 @@
                             {% if miembro.foto %}
                                 <img src="{{ miembro.foto.url }}" alt="Foto de {{ miembro.nombre }}" class="rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
                             {% else %}
-                                <img src="{% static 'img/person.jpg' %}" alt="Sin foto" class="rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
+                                <img src="{% static 'img/predeterminado.png' %}" alt="Sin foto" class="rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
                             {% endif %}
                         </a>
                         <h5 class="card-title">{{ miembro.nombre }} {{ miembro.apellido }}</h5>
