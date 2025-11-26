@@ -99,6 +99,10 @@ class Usuario(models.Model):
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
 
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)
+        self._password = raw_password
+
     @property
     def get_rubro_real_display(self):
         if self.rubro == 'otro':

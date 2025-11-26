@@ -150,6 +150,19 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Historial de Ganadores -->
+            <div class="card shadow-lg mt-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-trophy-fill me-2"></i>Historial de Ganadores</h5>
+                    <button id="clear-history-btn" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash3-fill me-1"></i>Limpiar</button>
+                </div>
+                <div class="card-body">
+                    <ul id="winner-history-list" class="list-group list-group-flush">
+                        <li id="no-history-msg" class="list-group-item text-muted text-center">Aún no hay ganadores en esta sesión.</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 </main>
@@ -188,10 +201,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const spinBtn = document.getElementById('spin-btn');
     const reunionFilter = document.getElementById('reunion-filter');
     const winnerModal = new bootstrap.Modal(document.getElementById('winnerModal'));
+    const winnerHistoryList = document.getElementById('winner-history-list');
+    const noHistoryMsg = document.getElementById('no-history-msg');
+    const clearHistoryBtn = document.getElementById('clear-history-btn');
 
     let participants = [];
     let rotation = 0;
     let isSpinning = false;
+    let winnerHistory = [];
     const rouletteColors = ["#8EE000", "#FFFFFF"]; // Colores corporativos para la ruleta
     const confettiColors = ["#8EE000", "#0096A7", "#FFC107"]; // Colores para el confeti
 
@@ -261,6 +278,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const winner = participants[winnerIndex];
 
             showWinner(winner);
+            winnerHistory.push(winner);
+            updateWinnerHistory();
             isSpinning = false;
             spinBtn.disabled = false;
         }, 8000); // Match CSS transition duration
@@ -279,6 +298,28 @@ document.addEventListener('DOMContentLoaded', function() {
         winnerModal.show();
     }
 
+    function updateWinnerHistory() {
+        winnerHistoryList.innerHTML = ''; // Limpiar la lista
+
+        if (winnerHistory.length === 0) {
+            winnerHistoryList.appendChild(noHistoryMsg);
+        } else {
+            winnerHistory.forEach((winner, index) => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item d-flex align-items-center';
+                li.innerHTML = `
+                    <span class="badge bg-success me-3">${index + 1}</span>
+                    <img src="${winner.foto_url}" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;">
+                    <div class="flex-grow-1">
+                        <div class="fw-bold">${winner.nombre_completo}</div>
+                        <small class="text-muted">${winner.rubro || 'Sin rubro'}</small>
+                    </div>
+                `;
+                winnerHistoryList.appendChild(li);
+            });
+        }
+    }
+
     async function loadParticipants() {
         const reunionId = reunionFilter.value;
         if (!reunionId) {
@@ -295,6 +336,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             participants = data.participantes || [];
+            // Limpiar historial al cargar nuevos participantes
+            winnerHistory = [];
+            updateWinnerHistory();
+
             if (participants.length > 0) {
                 canvas.width = 500;
                 canvas.height = 500;
@@ -347,6 +392,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     spinBtn.addEventListener('click', spin);
     reunionFilter.addEventListener('change', loadParticipants); // Carga automática al cambiar la selección
+    clearHistoryBtn.addEventListener('click', () => {
+        winnerHistory = [];
+        updateWinnerHistory();
+        Swal.fire({title: '¡Hecho!', text: 'El historial de ganadores ha sido limpiado.', icon: 'info', timer: 1500, showConfirmButton: false});
+    });
 
     // Initial draw (empty)
     canvas.width = 500;

@@ -47,17 +47,23 @@ def login(request):
         form = LoginForm()
     return render(request, 'login.html', {'form': form})
 
+def logout(request):
+    """Cierra la sesión del usuario."""
+    if 'usuario_id' in request.session:
+        del request.session['usuario_id']
+    messages.success(request, 'Has cerrado sesión correctamente.')
+    return redirect('inicio')
+
 def registro(request):
     if request.method == 'POST':
         form = UsuarioForm(request.POST, request.FILES)
         if form.is_valid():
-            # Guardamos el formulario y obtenemos la instancia del nuevo usuario
             usuario = form.save()
-            # Iniciamos sesión para el nuevo usuario guardando su ID en la sesión
             request.session['usuario_id'] = usuario.id
-            # Enviamos un mensaje de bienvenida personalizado
-            messages.success(request, f'¡Bienvenido a EcosistemaLA, {usuario.nombre}! Tu registro fue exitoso.')
-            # Redirigimos al inicio en lugar de a la página de login
+            
+            # Mensaje de bienvenida simple
+            messages.success(request, f'¡Bienvenido, {usuario.nombre}! Tu registro fue exitoso.')
+
             return redirect('inicio')
         # Si el formulario NO es válido, se renderiza la misma página con los errores
         # pero el 'form' ahora contiene los errores y los datos anteriores.

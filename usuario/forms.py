@@ -41,12 +41,10 @@ class LoginForm(forms.Form):
 
 
 class UsuarioForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'autocomplete': 'new-password'}))
-    password2 = forms.CharField(label="Confirmar Contraseña", widget=forms.PasswordInput(attrs={'class': 'form-control', 'autocomplete': 'new-password'}))
     class Meta:
         model = Usuario
         fields = [
-            'nombre', 'apellido', 'rubro', 'rubro_otro', 'rut', 'email', 'telefono', 'password', 'foto',
+            'nombre', 'apellido', 'rubro', 'rubro_otro', 'rut', 'email', 'telefono', 'foto',
             'nombre_empresa', 'rubro_empresa', 'descripcion_empresa', 'web_empresa', 'buscando'
         ]
         widgets = {
@@ -57,7 +55,6 @@ class UsuarioForm(forms.ModelForm):
             'rut': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
             'telefono': forms.TextInput(attrs={'class': 'form-control'}),
-            'foto': forms.FileInput(attrs={'class': 'form-control d-none'}),
             # Widgets para los nuevos campos de empresa
             'nombre_empresa': forms.TextInput(attrs={'class': 'form-control'}),
             'rubro_empresa': forms.TextInput(attrs={'class': 'form-control'}),
@@ -65,6 +62,7 @@ class UsuarioForm(forms.ModelForm):
             'web_empresa': forms.URLInput(attrs={'class': 'form-control'}),
             'buscando': forms.TextInput(attrs={'class': 'form-control'}),
         }
+        # El widget de 'foto' se maneja mejor en el __init__ para que no aparezca en el HTML por defecto.
 
     def clean_rut(self):
         rut = self.cleaned_data.get('rut')
@@ -85,24 +83,28 @@ class UsuarioForm(forms.ModelForm):
             raise forms.ValidationError("Ya existe un usuario con este correo electrónico.")
         return email
 
-    def clean_password(self):
-        password = self.cleaned_data.get('password')
-        if len(password) < 8:
-            raise forms.ValidationError("La contraseña debe tener al menos 8 caracteres.")
-        return password
-
     def clean(self):
         cleaned_data = super().clean()
         rubro = cleaned_data.get("rubro")
         rubro_otro = cleaned_data.get("rubro_otro")
-        password = cleaned_data.get("password")
-        password2 = cleaned_data.get("password2")
-
-        if password and password2 and password != password2:
-            self.add_error('password2', "Las contraseñas no coinciden.")
 
         if rubro == 'otro' and not rubro_otro:
             self.add_error('rubro_otro', 'Debes especificar tu rubro si seleccionas "Otro".')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Ocultamos el input de archivo por defecto para estilizarlo con un botón.
+        self.fields['foto'].widget = forms.FileInput(attrs={'class': 'd-none'})
+
+    def save(self, commit=True):
+        usuario = super().save(commit=False)
+        rut_limpio = self.cleaned_data.get('rut')
+        # La contraseña será el RUT sin el dígito verificador.
+        password = rut_limpio[:-1]
+        usuario.set_password(password)
+        if commit:
+            usuario.save()
+        return usuario
 
 
 class EditarUsuarioForm(forms.ModelForm):

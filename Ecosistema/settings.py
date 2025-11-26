@@ -13,29 +13,29 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 
+# --- Rutas del Proyecto (usando pathlib, que es más moderno) ---
 BASE_DIR = Path(__file__).resolve().parent.parent
-TEMPLATES_DIR=os.path.join(BASE_DIR,'templates')
-STATIC_DIR=os.path.join(BASE_DIR,'static')
-MEDIA_DIR=os.path.join(BASE_DIR,'media')
 
-
-
-
-BASE_URL = 'http://192.168.1.105:8000' 
-
-
-
+# --- Configuración de Seguridad ---
 SECRET_KEY = 'django-insecure-it)h7wo8um6o+%f+p8qduxi0p9)u7x(#zvh5k)_bj*n6wb!=p)'
-DEBUG = False
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost','72.61.134.252', 'srv1076255.hstgr.cloud', 'meetingup.cl', 'www.meetingup.cl'] 
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://meetingup.cl/",
-    "https://www.meetingup.cl/",
-]
+# CAMBIO 1: DEBUG = True para desarrollo local. Esto es lo más importante.
+# Hace que Django muestre errores detallados y sirva archivos estáticos.
+DEBUG = True
 
+# CAMBIO 2: En desarrollo, puedes dejar ALLOWED_HOSTS vacío o con los hosts locales.
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
+# Esto no es necesario para desarrollo local.
+# CSRF_TRUSTED_ORIGINS = [
+#     "https://meetingup.cl/",
+#     "https://www.meetingup.cl/",
+# ]
 
+# CAMBIO 3: La URL base para desarrollo local.
+BASE_URL = 'http://127.0.0.1:8000'
+
+# --- Aplicaciones Instaladas ---
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,10 +44,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'usuario',
-    'login',
+    # 'login', # NOTA: La lógica de login parece estar en la app 'usuario', quizás esta app 'login' no es necesaria.
     'paneladm',
 ]
 
+# --- Middleware ---
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -56,15 +57,16 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'usuario.middleware.UserInfoMiddleware', 
+    # 'usuario.middleware.UserInfoMiddleware', # Si no usas este middleware, puedes comentarlo.
 ]
 
 ROOT_URLCONF = 'Ecosistema.urls'
 
+# --- Plantillas ---
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [TEMPLATES_DIR],
+        'DIRS': [BASE_DIR / 'templates'], # Usando pathlib
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -72,7 +74,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'usuario.context_processors.notificaciones_admin', 
+                'usuario.context_processors.notificaciones_admin',
             ],
         },
     },
@@ -80,65 +82,58 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Ecosistema.wsgi.application'
 
+# --- Base de Datos ---
+# CAMBIO 4: Usaremos SQLite para desarrollo local. Es un solo archivo y no requiere instalación.
+# Tu configuración de MySQL está bien si tienes MySQL instalado y configurado, pero SQLite es más simple para empezar.
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
+# Si prefieres seguir usando MySQL, asegúrate de que el servidor MySQL esté corriendo.
+# Tu configuración original para MySQL:
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ecola',
-        'USER':'root',
-        'PASSWORD':'',
+        'NAME': 'ecola',          # La base de datos que creaste en el Paso 3.
+        'USER': 'root',           # El usuario de tu MySQL (suele ser 'root' en local).
+        'PASSWORD': '',           # La contraseña de tu usuario (suele estar vacía en XAMPP).
+        'HOST': '127.0.0.1',      # El servidor local.
+        'PORT': '3306',           # El puerto estándar de MySQL.
         'OPTIONS': {
-            'init_command':"SET sql_mode='STRICT_TRANS_TABLES'",
-            'charset':'utf8mb4'
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'charset': 'utf8mb4'
         }
     }
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
-
+# --- Validación de Contraseñas ---
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
-
+# --- Internacionalización ---
 LANGUAGE_CODE = 'es-cl'
-
 TIME_ZONE = 'America/Santiago'
-
 USE_I18N = True
-
 USE_TZ = True
 
+# --- Archivos Estáticos y de Medios ---
+# CAMBIO 5: Configuración simplificada y clara para estáticos y medios.
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
+# URL para acceder a los archivos estáticos (CSS, JS, imágenes del tema)
 STATIC_URL = 'static/'
-STATICFILES_DIRS=[STATIC_DIR,]
-MEDIA_ROOT=MEDIA_DIR
-MEDIA_URL='/media/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# Directorio donde `collectstatic` pondrá los archivos para producción. No se usa mucho con DEBUG=True.
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+# Directorios donde Django buscará tus archivos estáticos personales.
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+# URL para acceder a los archivos subidos por los usuarios (fotos de perfil, etc.)
+MEDIA_URL = '/media/'
+# Directorio donde se guardarán los archivos subidos por los usuarios.
+MEDIA_ROOT = BASE_DIR / 'media'
 
+
+# --- Tipo de Clave Primaria por Defecto ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
