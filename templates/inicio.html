@@ -742,7 +742,7 @@ document.addEventListener('DOMContentLoaded', function () {
       <div class="modal-body p-4">
         <p class="text-muted small">Muestra este código en el acceso del evento para registrar tu asistencia de forma rápida.</p>
         {% if usuario.qr_code %}
-            <img src="{{ usuario.qr_code.url }}" alt="Código QR de {{ usuario.nombre }}" class="img-fluid rounded mb-3" style="max-width: 250px;">
+            <img src="{{ usuario.qr_code.url }}" alt="Código QR de {{ usuario.nombre }}" class="img-fluid rounded mb-3" style="max-width: 250px;" id="qrImage">
             <h5 class="fw-bold">¡Escanéame!</h5>
             <p>{{ usuario.nombre }} {{ usuario.apellido }}</p>
             <a href="{{ usuario.qr_code.url }}" class="btn btn-success" download="qr_ecosistemala_{{ usuario.rut }}.png">
