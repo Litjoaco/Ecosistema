@@ -122,8 +122,10 @@ def editar_perfil(request, usuario_id):
     return render(request, 'editar_perfil.html', {'form': form, 'usuario': usuario})
 
 def perfil_publico(request, usuario_id):
-    usuario = get_object_or_404(Usuario, id=usuario_id)
-    return render(request, 'perfil_publico.html', {'usuario': usuario})
+    # MODO MANTENIMIENTO
+    return render(request, 'mantenimiento.html')
+    # usuario = get_object_or_404(Usuario, id=usuario_id)
+    # return render(request, 'perfil_publico.html', {'usuario': usuario})
 
 def imprimir_etiqueta(request, usuario_id):
     """
@@ -322,38 +324,42 @@ def ver_ticket_usuario(request, ticket_id):
 
 @login_required
 def directorio_miembros(request):
-    usuario_id = request.session.get('usuario_id')
-    usuario_actual = get_object_or_404(Usuario, id=usuario_id) # El que está viendo la página
+    # MODO MANTENIMIENTO
+    return render(request, 'mantenimiento.html')
 
-    query = request.GET.get('q', '')
-    rubro_filter = request.GET.get('rubro', '')
+    # --- CÓDIGO ORIGINAL ---
+    # usuario_id = request.session.get('usuario_id')
+    # usuario_actual = get_object_or_404(Usuario, id=usuario_id) # El que está viendo la página
 
-    # Los usuarios solo ven perfiles públicos. El admin ve todos.
-    if request.user_is_admin:
-        # El admin ve a todos los usuarios (no admins), ordenando por destacado y luego por visibilidad
-        miembros = Usuario.objects.filter(es_admin=False).order_by('-destacado', '-perfil_publico', 'nombre')
-    else:
-        miembros = Usuario.objects.filter(perfil_publico=True, es_admin=False).order_by('-destacado', 'nombre')
+    # query = request.GET.get('q', '')
+    # rubro_filter = request.GET.get('rubro', '')
 
-    if query:
-        miembros = miembros.filter(
-            Q(nombre__icontains=query) | 
-            Q(apellido__icontains=query) |
-            Q(nombre_empresa__icontains=query) |
-            Q(rubro_empresa__icontains=query)
-        )
+    # # Los usuarios solo ven perfiles públicos. El admin ve todos.
+    # if request.user_is_admin:
+    #     # El admin ve a todos los usuarios (no admins), ordenando por destacado y luego por visibilidad
+    #     miembros = Usuario.objects.filter(es_admin=False).order_by('-destacado', '-perfil_publico', 'nombre')
+    # else:
+    #     miembros = Usuario.objects.filter(perfil_publico=True, es_admin=False).order_by('-destacado', 'nombre')
+
+    # if query:
+    #     miembros = miembros.filter(
+    #         Q(nombre__icontains=query) | 
+    #         Q(apellido__icontains=query) |
+    #         Q(nombre_empresa__icontains=query) |
+    #         Q(rubro_empresa__icontains=query)
+    #     )
     
-    if rubro_filter:
-        miembros = miembros.filter(rubro__iexact=rubro_filter)
+    # if rubro_filter:
+    #     miembros = miembros.filter(rubro__iexact=rubro_filter)
 
-    rubros = Usuario.objects.filter(perfil_publico=True).exclude(rubro__exact='').values_list('rubro', flat=True).distinct().order_by('rubro')
+    # rubros = Usuario.objects.filter(perfil_publico=True).exclude(rubro__exact='').values_list('rubro', flat=True).distinct().order_by('rubro')
 
-    contexto = {
-        'usuario': usuario_actual,
-        'miembros': miembros,
-        'rubros': rubros,
-    }
-    return render(request, 'directorio.html', contexto)
+    # contexto = {
+    #     'usuario': usuario_actual,
+    #     'miembros': miembros,
+    #     'rubros': rubros,
+    # }
+    # return render(request, 'directorio.html', contexto)
 
 @login_required
 def mis_reuniones(request):
