@@ -37,11 +37,7 @@
                 <div class="card h-100 text-center shadow-sm d-flex flex-column {% if not miembro.perfil_publico %}opacity-50{% endif %}">
                     <div class="card-body">
                         <a href="{% url 'perfil_publico' miembro.id %}">
-                            {% if miembro.foto %}
-                                <img src="{{ miembro.foto.url }}" alt="Foto de {{ miembro.nombre }}" class="rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
-                            {% else %}
-                                <img src="{% static 'img/person.jpg' %}" alt="Sin foto" class="rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
-                            {% endif %}
+                            <img src="{% if miembro.foto %}{{ miembro.foto.url }}{% else %}{% static 'img/predeterminado.png' %}{% endif %}" alt="Foto de {{ miembro.nombre }}" class="rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
                         </a>
                         <h5 class="card-title">{{ miembro.nombre }} {{ miembro.apellido }}</h5>
                         <p class="card-text text-muted">{{ miembro.rubro|default_if_none:"" }}</p>
