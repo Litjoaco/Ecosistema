@@ -324,42 +324,46 @@ def ver_ticket_usuario(request, ticket_id):
 
 @login_required
 def directorio_miembros(request):
-    # MODO MANTENIMIENTO
-    return render(request, 'mantenimiento.html')
+    # --- CÓDIGO CORREGIDO Y MEJORADO ---
+    usuario_id = request.session.get('usuario_id')
+    usuario_actual = get_object_or_404(Usuario, id=usuario_id) # El que está viendo la página
 
-    # --- CÓDIGO ORIGINAL ---
-    # usuario_id = request.session.get('usuario_id')
-    # usuario_actual = get_object_or_404(Usuario, id=usuario_id) # El que está viendo la página
+    query = request.GET.get('q', '')
+    rubro_filter = request.GET.get('rubro', '')
 
-    # query = request.GET.get('q', '')
-    # rubro_filter = request.GET.get('rubro', '')
+    # Base de miembros: excluimos roles especiales que no deben aparecer en el directorio.
+    base_miembros = Usuario.objects.filter(es_admin=False, es_ayudante=False, es_totem=False)
 
-    # # Los usuarios solo ven perfiles públicos. El admin ve todos.
-    # if request.user_is_admin:
-    #     # El admin ve a todos los usuarios (no admins), ordenando por destacado y luego por visibilidad
-    #     miembros = Usuario.objects.filter(es_admin=False).order_by('-destacado', '-perfil_publico', 'nombre')
-    # else:
-    #     miembros = Usuario.objects.filter(perfil_publico=True, es_admin=False).order_by('-destacado', 'nombre')
+    # Los usuarios normales solo ven perfiles públicos. El admin ve todos los perfiles (públicos y privados).
+    if request.user_is_admin:
+        # El admin ve a todos los usuarios, ordenando por destacado, luego por visibilidad y finalmente por nombre.
+        miembros = base_miembros.order_by('-destacado', '-perfil_publico', 'nombre')
+    else:
+        miembros = base_miembros.filter(perfil_publico=True).order_by('-destacado', 'nombre')
 
-    # if query:
-    #     miembros = miembros.filter(
-    #         Q(nombre__icontains=query) | 
-    #         Q(apellido__icontains=query) |
-    #         Q(nombre_empresa__icontains=query) |
-    #         Q(rubro_empresa__icontains=query)
-    #     )
-    
-    # if rubro_filter:
-    #     miembros = miembros.filter(rubro__iexact=rubro_filter)
+    if query:
+        miembros = miembros.filter(
+            Q(nombre__icontains=query) |
+            Q(apellido__icontains=query) |
+            Q(nombre_empresa__icontains=query) |
+            Q(rubro__icontains=query)  # Corregido: buscar en el rubro del usuario
+        )
 
-    # rubros = Usuario.objects.filter(perfil_publico=True).exclude(rubro__exact='').values_list('rubro', flat=True).distinct().order_by('rubro')
+    if rubro_filter:
+        miembros = miembros.filter(rubro__iexact=rubro_filter)
 
-    # contexto = {
-    #     'usuario': usuario_actual,
-    #     'miembros': miembros,
-    #     'rubros': rubros,
-    # }
-    # return render(request, 'directorio.html', contexto)
+    # Obtenemos todos los rubros posibles desde el modelo para el filtro del directorio.
+    # Se crea una lista de tuplas (valor, nombre_visible) para ser usada en la plantilla.
+    todos_los_rubros = []
+    for group_name, choices in RUBRO_CHOICES:
+        todos_los_rubros.extend(choices)
+
+    contexto = {
+        'usuario': usuario_actual,
+        'miembros': miembros,
+        'rubros': todos_los_rubros,
+    }
+    return render(request, 'directorio.html', contexto)
 
 @login_required
 def mis_reuniones(request):

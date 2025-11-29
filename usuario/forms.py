@@ -45,7 +45,7 @@ class UsuarioForm(forms.ModelForm):
         model = Usuario
         fields = [
             'nombre', 'apellido', 'rubro', 'rubro_otro', 'rut', 'email', 'telefono', 'foto',
-            'nombre_empresa', 'rubro_empresa', 'descripcion_empresa', 'web_empresa', 'buscando'
+            'nombre_empresa', 'descripcion_empresa', 'web_empresa', 'buscando'
         ]
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
@@ -57,7 +57,6 @@ class UsuarioForm(forms.ModelForm):
             'telefono': forms.TextInput(attrs={'class': 'form-control'}),
             # Widgets para los nuevos campos de empresa
             'nombre_empresa': forms.TextInput(attrs={'class': 'form-control'}),
-            'rubro_empresa': forms.TextInput(attrs={'class': 'form-control'}),
             'descripcion_empresa': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'web_empresa': forms.URLInput(attrs={'class': 'form-control'}),
             'buscando': forms.TextInput(attrs={'class': 'form-control'}),
@@ -112,7 +111,7 @@ class EditarUsuarioForm(forms.ModelForm):
         model = Usuario
         fields = [
             'nombre', 'apellido', 'rubro', 'rubro_otro', 'rut', 'email', 'telefono', 'foto',
-            'nombre_empresa', 'rubro_empresa', 'descripcion_empresa', 'web_empresa', 'buscando'
+            'nombre_empresa', 'descripcion_empresa', 'web_empresa', 'buscando'
         ]
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
@@ -125,7 +124,6 @@ class EditarUsuarioForm(forms.ModelForm):
             'foto': forms.FileInput(attrs={'class': 'form-control d-none'}),
             # Widgets para los nuevos campos de empresa
             'nombre_empresa': forms.TextInput(attrs={'class': 'form-control'}),
-            'rubro_empresa': forms.TextInput(attrs={'class': 'form-control'}),
             'descripcion_empresa': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'web_empresa': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: miempresa.com'}),
             'buscando': forms.TextInput(attrs={'class': 'form-control'}),
@@ -162,7 +160,7 @@ class AdminUsuarioForm(forms.ModelForm):
         model = Usuario
         # Para el admin, incluimos todos los campos del usuario normal MÁS los roles y 'cantidad_asistencias'
         fields = ['nombre', 'apellido', 'rubro', 'rubro_otro', 'rut', 'email', 'telefono', 'password', 'foto', 'es_admin', 'es_ayudante', 'es_totem', 'cantidad_asistencias',
-                  'nombre_empresa', 'rubro_empresa', 'descripcion_empresa', 'web_empresa', 'buscando'
+                  'nombre_empresa', 'descripcion_empresa', 'web_empresa', 'buscando'
         ]
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
@@ -177,7 +175,6 @@ class AdminUsuarioForm(forms.ModelForm):
             'es_ayudante': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'es_totem': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'nombre_empresa': forms.TextInput(attrs={'class': 'form-control'}),
-            'rubro_empresa': forms.TextInput(attrs={'class': 'form-control'}),
             'descripcion_empresa': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'web_empresa': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: miempresa.com'}),
             'buscando': forms.TextInput(attrs={'class': 'form-control'}),
