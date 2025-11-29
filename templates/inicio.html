@@ -15,7 +15,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <style>
-        body { font-family: 'Poppins', Arial, sans-serif; background-color: #f4f7f6; }
+        html, body {
+            height: 100%;
+        }
+        body { 
+            font-family: 'Poppins', Arial, sans-serif; background-color: #f4f7f6;
+            display: flex; flex-direction: column;
+        }
         /* El header se elimina para usar el navbar de Bootstrap */
         .testimonial {
             position: relative;
@@ -48,7 +54,11 @@
             display: flex;
             align-items: center;
         }
-        footer { background: linear-gradient(to right, #8EE000, #0096A7); color: white; padding: 30px 20px; }
+        main {
+            flex: 1 0 auto; /* Permite que el contenido principal crezca y ocupe el espacio disponible */
+        }
+        footer { background: linear-gradient(to right, #8EE000, #0096A7); color: white; padding: 30px 20px; flex-shrink: 0; /* Evita que el footer se encoja */
+        }
         footer a { color: white; text-decoration: none; } 
         footer h6 { margin-bottom: 10px; }
         
