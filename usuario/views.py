@@ -123,9 +123,9 @@ def editar_perfil(request, usuario_id):
 
 def perfil_publico(request, usuario_id):
     # MODO MANTENIMIENTO
-    return render(request, 'mantenimiento.html')
-    # usuario = get_object_or_404(Usuario, id=usuario_id)
-    # return render(request, 'perfil_publico.html', {'usuario': usuario})
+    # return render(request, 'mantenimiento.html')
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+    return render(request, 'perfil_publico.html', {'usuario': usuario})
 
 def imprimir_etiqueta(request, usuario_id):
     """
