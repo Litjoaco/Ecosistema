@@ -335,7 +335,7 @@ def directorio_miembros(request):
     base_miembros = Usuario.objects.filter(es_admin=False, es_ayudante=False, es_totem=False)
 
     # Los usuarios normales solo ven perfiles públicos. El admin ve todos los perfiles (públicos y privados).
-    if request.user_is_admin:
+    if usuario_actual.es_admin:
         # El admin ve a todos los usuarios, ordenando por destacado, luego por visibilidad y finalmente por nombre.
         miembros = base_miembros.order_by('-destacado', '-perfil_publico', 'nombre')
     else:
@@ -353,10 +353,7 @@ def directorio_miembros(request):
         miembros = miembros.filter(rubro__iexact=rubro_filter)
 
     # Obtenemos todos los rubros posibles desde el modelo para el filtro del directorio.
-    # Se crea una lista de tuplas (valor, nombre_visible) para ser usada en la plantilla.
-    todos_los_rubros = []
-    for group_name, choices in RUBRO_CHOICES:
-        todos_los_rubros.extend(choices)
+    todos_los_rubros = [choice[0] for group in RUBRO_CHOICES for choice in group[1]]
 
     contexto = {
         'usuario': usuario_actual,

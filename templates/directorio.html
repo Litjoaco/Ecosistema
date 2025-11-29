@@ -48,25 +48,24 @@
                         {% if miembro.nombre_empresa %}
                         <p class="card-text small"><i class="bi bi-building"></i> {{ miembro.nombre_empresa }}</p>
                         {% endif %}
-                        {% if request.user_is_admin and not miembro.perfil_publico %}
+                        {% if user.is_staff and not miembro.perfil_publico %}
                             <span class="badge bg-danger">Oculto</span>
                         {% endif %}
                     </div>
                     <div class="card-footer bg-white border-0 pt-0">
                         <a href="{% url 'perfil_publico' miembro.id %}" class="btn btn-outline-primary btn-sm mt-auto mb-2">Ver Perfil</a>
                         
-                        {% if request.user_is_admin and request.user_id != miembro.id %}
+                        {% if user.is_staff and user.id != miembro.id %}
                         <div class="admin-actions border-top pt-2 mt-2">
                             <small class="text-muted d-block mb-1">Acciones de Admin</small>
                             <a href="{% url 'panel-admin:toggle_destacado_usuario' miembro.id %}" class="btn btn-sm {% if miembro.destacado %}btn-warning{% else %}btn-outline-warning{% endif %}" title="{% if miembro.destacado %}Quitar destacado{% else %}Destacar miembro{% endif %}">
                                 <i class="bi {% if miembro.destacado %}bi-star-fill{% else %}bi-star{% endif %}"></i>
                             </a>
-                            {% if miembro.perfil_publico %}
-                                <a href="{% url 'panel-admin:toggle_visibilidad_usuario' miembro.id %}" class="btn btn-sm btn-outline-secondary" title="Ocultar del directorio">
-                                    <i class="bi bi-eye-slash-fill"></i>
-                                </a>
-                            {% else %}
+                            {% if not miembro.perfil_publico %}
+                                <!-- El perfil ya es privado, el admin no puede hacerlo público desde aquí -->
                                 <button class="btn btn-sm btn-secondary" disabled title="El usuario ha configurado su perfil como privado."><i class="bi bi-eye-slash-fill"></i></button>
+                            {% else %}
+                                <a href="{% url 'panel-admin:toggle_visibilidad_usuario' miembro.id %}" class="btn btn-sm btn-outline-secondary" title="Ocultar del directorio"><i class="bi bi-eye-slash-fill"></i></a>
                             {% endif %}
                         </div>
                         {% endif %}
@@ -85,31 +84,6 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const deleteButtons = document.querySelectorAll('.delete-btn');
-    deleteButtons.forEach(button => {
-        button.addEventListener('click', function(event) {
-            event.preventDefault();
-            const form = this.closest('.delete-form');
-            const nombreUsuario = this.dataset.nombre;
-            Swal.fire({
-                title: `¿Estás seguro de eliminar a ${nombreUsuario}?`,
-                text: "¡No podrás revertir esta acción!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Sí, ¡eliminar!',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
-            });
-        });
-    });
-});
-</script>
+{{ block.super }}
+<!-- Si tienes scripts específicos para esta página, añádelos aquí -->
 {% endblock %}
